@@ -1,3 +1,5 @@
 # Tokens y llaves (Chatea Pro, etc.): nunca se suben al repo
 .secrets/
 *.token
+__pycache__/
+*.pyc
