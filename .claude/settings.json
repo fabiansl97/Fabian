@@ -1,0 +1,10 @@
+{
+  "extraKnownMarketplaces": {
+    "skills-comunidad-golden": {
+      "source": {
+        "source": "github",
+        "repo": "feropel/skills-comunidad-golden"
+      }
+    }
+  }
+}
