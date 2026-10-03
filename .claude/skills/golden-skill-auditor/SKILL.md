@@ -1,0 +1,337 @@
+---
+name: golden-skill-auditor
+description: >-
+  Golden Group — AUDITOR MAESTRO de skills. Entra a cualquier skill instalada en
+  ~/.claude/skills, la lee COMPLETA de inicio a fin (SKILL.md + references + scripts +
+  assets, sin omitir un solo archivo), la califica sobre 1000 puntos con una rúbrica fija de
+  7 dimensiones, reporta qué está bien, qué está mal y qué le falta, y la ARREGLA hasta
+  dejarla mil de mil: reestructura, optimiza el disparo (description), pule instrucciones,
+  repara referencias rotas, valida scripts y verifica los estándares Golden (prefijo,
+  autonomía, cero datos privados, blindaje). Úsala SIEMPRE que el usuario quiera: auditar,
+  evaluar, calificar, revisar, optimizar, mejorar, perfeccionar o "dejar mil de mil" una
+  skill; sepa qué le falta a una skill; diga "audita esta skill", "revisa la skill X", "qué
+  le falta a mi skill", "optimiza la skill", "califícame esta skill", "está bien
+  estructurada mi skill", "mejora todos los procesos de la skill". Dispara aunque no diga
+  "auditar": basta con que pida diagnóstico o mejora de una skill existente.
+---
+
+**Fábrica:** chat «✅ SKILL golden-skill-auditor»
+
+## 🔴 MANDATO DE FER · 2026-09-03 · ESTO NO PUEDE VOLVER A PASAR NUNCA
+
+**Palabras de FER:** *"Tenemos un auditor de skills. Ese auditor tenía que haberse dado cuenta y no se dio cuenta. Dale la instrucción para que esto no vuelva a pasar nunca jamás: que mire y evalúe siempre TODAS las skills. Tiene que auditar cada una de las skills, que esté bien redactado, que esté bien conectado, que no se pase de los topes, todo, todo, todo. Que las estructuras tengan absolutamente todo. Y que esa skill también se autoevalúe."*
+
+**Qué pasó y por qué es culpa del instrumento, no de nadie.** El 2026-09-02 se midió que **33 skills de la casa estaban fuera de la especificación** y **5 tenían el frontmatter con YAML inválido**, y esta skill no lo vio en ninguna auditoría. La causa exacta: `scripts/inventario.sh` **medía** la longitud de la description (línea 293) y la **imprimía** (línea 295), pero **nunca la comparaba contra un tope** — `1024` aparecía cero veces en sus scripts, y cero menciones de tope en la rúbrica. Quien lee "1442 caracteres" no tiene con qué compararlo. Skills selladas ORO por esta misma rúbrica estaban fuera de norma.
+
+**La lección permanente: medir no es comparar. Un número sin vara al lado no es un chequeo, es decoración.**
+
+### LO QUE ESTA SKILL ESTÁ OBLIGADA A HACER, SIEMPRE
+
+**1. PRIMERO EL VALIDADOR, ANTES DE CUALQUIER NOTA.**
+```
+python3 scripts/validar_arsenal.py <ruta-de-la-skill>      # una skill
+python3 scripts/validar_arsenal.py --casa                  # las 39 de la casa
+python3 scripts/validar_arsenal.py                         # el arsenal entero
+```
+Salida `0` limpio · `1` hay fallos · `2` no se pudo leer. **Si sale 1, la skill no pasa de 700/1000**, por perfecta que sea en las 7 dimensiones. La compuerta está escrita en `references/rubrica.md`. `validar_arsenal.py` importa internamente `scripts/conexiones.py` (chequeo de CONEXIONES, encargo de FER 2026-09-03: rutas internas rotas + nombres golden-* huérfanos, resueltos contra skills/agentes/memoria/familias de prefijo) — no se corre suelto, siempre a través del validador.
+
+**2. AUTOEVALUARSE PRIMERO, ANTES DE JUZGAR A NADIE — Y AUTOREPARARSE SI HACE FALTA.** Al dispararse, para CUALQUIER tarea (auditar otra skill, o que te llamen sin nombrar ninguna), esta skill se audita a sí misma antes que a cualquier otra, SIEMPRE, sin excepción:
+```
+bash scripts/inventario.sh ~/.claude/skills/golden-skill-auditor
+python3 scripts/autoprueba_arsenal.py     # 23 casos, en las dos direcciones
+python3 scripts/validar_arsenal.py ~/.claude/skills/golden-skill-auditor
+```
+Mandato de FER (2026-09-05): "de ti depende que todas [las skills] estén siempre al 100% funcionales" — por eso esta skill no se conforma con REPORTAR su propio hallazgo, se AUTORREPARA en el acto: si `inventario.sh` marca algo real (🔴, o un DUDOSO que al mirarlo a mano resulta ser un hallazgo genuino), corrígelo tú mismo aquí y ahora (backup en `~/.claude/skill-backups/`, arregla, re-verifica con el mismo script, re-blinda) ANTES de seguir con la tarea que te pidieron — no lo dejes anotado para "otra vez". Esto es la misma disciplina que ya aplicas a cualquier skill golden-*, aplicada primero a ti mismo: no le exigirías a otra skill que reporte un 🔴 y siga como si nada, así que tú tampoco.
+
+**Si la autoprueba del arsenal no pasa** (los 23 casos de `autoprueba_arsenal.py`), eso SÍ no se autorrepara a ciegas — es el propio criterio de juicio el que falló, y corregirlo mal podría dejarlo sordo a una clase entera de fallos reales. El validador NO SE USA para juzgar a nadie hasta que se arregle con evidencia y se re-corra la autoprueba completa, y eso va **primero** en el informe, antes que el hallazgo de la skill que se venía a revisar.
+
+**Definición de "sigo siendo mil":** 0 referencias rotas propias, 0 huérfanos confirmados, autoprueba del arsenal en verde, validador en exit 0 contra sí misma. Si algo de eso falla y se repara en el acto, informa brevemente qué se arregló (una línea basta) — no hace falta re-narrar todo el proceso cada vez, pero tampoco callarlo.
+
+**3. TODO, TODO, TODO — las cuatro caras que hay que mirar en cada skill:**
+- **Que no se pase de los topes.** `name` 1-64 minúsculas con guiones simples y **coincidiendo con la carpeta** (si no coincide, la skill NO CARGA) · `description` **1-1024 DURO** · `compatibility` 1-500 · YAML válido y sin campos ajenos al frontmatter. Cuerpo de más de 500 líneas es **aviso, no falla**.
+- **Que esté bien redactado.** Reglas duras de FER sobre la description: sin signos de apertura, sin acentos rotos, sin rayas separadoras, lenguaje de EMPRESA fuera de las citas del cliente.
+- **Que esté bien conectado.** Rutas internas que existen, scripts declarados que están, y nombres de skills o agentes que resuelven a algo real. La conexión se juzga con tres reglas medidas, sin las cuales el chequeo es ruido: lo que vive en un **comentario HTML es historia** y no se juzga · una ruta **calificada con la skill dueña** (antes o después) es correcta aunque el archivo no esté aquí · un nombre `golden-*` puede ser **agente, memoria, prefijo de familia o token de marca**, no solo una skill.
+- **Que la estructura tenga todo.** SKILL.md con frontmatter válido, y si declara scripts, references o assets, que estén.
+
+**4. SIEMPRE TODAS, NUNCA UNA MUESTRA.** Cuando el encargo sea revisar el arsenal, se corre sobre **las 39 de la casa** y se reporta **N de N**. Revisar "las importantes" está prohibido: o todas, o se declara cuáles no y por qué.
+
+**5. COBERTURA, NUNCA VEREDICTO.** El informe dice universo, cuántas se revisaron, qué falla, qué quedó en aviso y qué no se pudo verificar. **Frases prohibidas: "quedó perfecto", "todo bien", "está listo", "debería funcionar".**
+
+**6. EL VALIDADOR OFICIAL MANDA SOBRE EL PROPIO.** Si `agentskills` (paquete `skills-ref`) está en el PATH, se usa y su veredicto pesa sobre la spec; si no está, se usa el chequeo propio y **se declara cuál se usó**. El oficial cazó una skill que el parser propio del Centro de Mando no vio.
+
+**7. SI ENCUENTRAS UN FALLO, BUSCA LA CLASE, NO EL CASO.** Y al arreglar una description que se pasa: **los disparadores primero** (los del final son los más nuevos y los primeros en perderse), lo explicativo y las fronteras **bajan al cuerpo**, que no tiene tope duro. **Nada se borra: se muda.**
+
+# Golden Skill Auditor — auditoría y reparación de skills mil de mil
+
+<!-- skill v1.28 — 2026-09-28 — mejora de diagnóstico reportada por la fábrica de ARSENAL Y SKILLS al publicar v1.27: correr `autoprueba_arsenal.py` desde una copia en una carpeta con OTRO nombre (ej. "gsa127" en vez de "golden-skill-auditor") hace fallar de verdad "el AUDITOR se valida a SI MISMO" — `validar_arsenal.py` exige, con razón, que `name` coincida con la carpeta — pero el banco solo imprimía "MAL ... (salida 1, esperada 0)" sin la causa, así que un MAL parecía un defecto del validador en vez de la copia mal nombrada que era. Ahora CUALQUIER caso que falle imprime las últimas líneas de salida del validador, no solo este. Reproducido el escenario exacto (copia en /tmp con nombre distinto): antes "49 de 50" sin explicación, ahora "49 de 50" con "name 'golden-skill-auditor' no coincide con la carpeta 'gsa127-test'" a la vista. 50/50 desde la carpeta real, sin cambios de comportamiento del validador. -->
+<!-- skill v1.27 — 2026-09-28 — P65 del CdM (FILA, reportado por la fábrica de golden-logistica-diaria): documentar una TRAMPA ("cuidado: `scripts/__pycache__/` no debe existir en el repo publicado") salía con "referencia rota" — penaliza documentar bien. Pero este mismo archivo ya mató DOS listas de excusas en prosa (v1.19/v1.20) por ser un `any(palabra in frase)` sin comprobación que tapaba citas muertas reales; la lección no era "nunca hagas excepciones por prosa", era "una excepción por prosa nunca es silenciosa". Arreglo: se baja de FALLO a AVISO (nunca se calla del todo) cuando la propia frase trae un marcador CERRADO y verificable ("no debe existir", "nunca debe existir", "se borra", "se elimina", "si aparece" — afirmaciones de ESTADO, no adjetivos de intención como "planeado"/"opcional" que ya se demostraron manipulables). Al probarlo se encontró Y CERRÓ un contagio nuevo de la MISMA clase: dos rutas en una sola frase ("`temporal.py` no debe existir, y aparte corre `real.py` siempre") dejaban que la negación de una rescatara a la otra — se pasó de "toda la frase" a una ventana local de ±20 caracteres alrededor de CADA cita, sin cruzar el límite de frase. Casos nuevos en autoprueba_arsenal.py (47→50, con el gemelo del contagio intra-frase) y verificado que autoprueba_conexiones.py (19/19) sigue intacta. -->
+<!-- skill v1.26 — 2026-09-27 — P59 del CdM (FILA, chat ARSENAL Y SKILLS): 3 exclusiones silenciosas propias, medidas por el barrido del arsenal. (1) `conexiones.py`: una ruta atribuida a otra skill ("de golden-shopify") se exoneraba solo por el nombre cercano, sin comprobar que el archivo existiera ahí — medido: dos rutas inexistentes junto a "golden-shopify" daban 0 fallos y 0 avisos. Ahora se comprueba os.path.exists contra la skill dueña real (junto a esta skill y en ~/.claude/skills), y solo se exime si el archivo SÍ está. (2) Mismo hueco encontrado de paso (no en el expediente) en el chequeo separado "script declarado y ausente": tampoco aplicaba la regla 2 (calificada = válida); unificado en `_dueno_ajeno()`, un solo lugar para las dos ramas. (3) `validar_arsenal.py`: `_librerias_de_terceros()` y `requisitos()` tenían `except OSError: continue` silenciosos — un script o SKILL.md ilegible salía del barrido sin aviso, y con el SKILL.md mismo ilegible la ley de requisitos pasaba en verde por no poder leer, no por no aplicar. Ahora SKILL.md ilegible = FALLO explícito; cualquier otro archivo ilegible = AVISO nombrando la ruta. Autoprueba ampliada de 45 a 47 casos (2 fixtures viejos citaban un archivo INVENTADO que nunca existió en golden-shopify — se corrigieron a un archivo real, y se sumó el gemelo real: la misma cita calificada pero con el archivo ausente, que ahora SÍ falla). autoprueba_conexiones.py 19/19, autoprueba_arsenal.py 47/47. Pendiente del P61 cerrado de paso: cita explícita de scripts/leer_frontmatter.py (línea 276 de inventario.sh) en el punto 1 de Fase 0. -->
+<!-- skill v1.25 — 2026-09-27 — Centro de Mando. Verde barato cazado por el chat del Arsenal: en el validador de requisitos "pregunta" casaba NEGADO ("el nicho no se pregunta") y daba por cumplido el "pedir al correr"; ahora exige la forma afirmativa. Autoprueba 45 de 45. Foto: 43 de 43, 11 FALLO, 0 avisos de pedir. -->
+<!-- skill v1.24 — 2026-09-27 — Centro de Mando, dos defectos PROPIOS del validador de requisitos medidos antes de reparar skills: (1) una credencial NOMBRADA en una historia o prohibición ("se colaron la llave de ElevenLabs", "nunca heredar el token") contaba como pedido; ahora cuenta solo si el texto la PIDE. (2) con un título "## ..." la sección se cortaba VACÍA y toda skill daba aviso aunque dijera qué hacer si falta; y el banco solo miraba el código de salida, así que no lo veía. Ahora el banco puede exigir que algo NO se diga ("!texto"). Autoprueba 44 de 44. Foto: 43 de 43, 19 con FALLO y 1 aviso real (video-editor). -->
+<!-- skill v1.23 — 2026-09-27 — Centro de Mando, sobre la primera auditoría semanal desatendida (solo audita). (1) `inventario.sh` daba 20 "mkstemp failed" en el sandbox de las rutinas y AUN ASÍ cerraba con "✅ Inventario completo" (verde barato): `mktemp` sin plantilla ignora TMPDIR. Ahora todo `mktemp` va a TMPDIR y, si no se puede escribir, ABORTA con exit 2. Medido: 0 errores dentro del sandbox; control negativo TMPDIR=/no/existe → aborta. (2) `autoprueba_inventario.sh`: la misma envoltura. Fuera del sandbox da 194 de 194. DENTRO da 119 de 185, porque planta skills de prueba en ~/.claude/skills y el sandbox no deja escribir ahí: esta autoprueba se corre fuera del sandbox (pendiente P44: fixtures bajo un HOME temporal). (3) `validar_arsenal.py` acepta el título impersonal "QUÉ NECESITA"; golden-ads era un falso que cazó el auditor. Autoprueba del validador 41 de 41. -->
+<!-- skill v1.22 — 2026-09-27 — Centro de Mando. LEY DE LOS REQUISITOS DEL USUARIO (FER, 02-sep) con CASILLA: vivió 25 días solo en prosa y pasó de 20 a 28 skills sin cumplirla. `validar_arsenal.py` ahora da FALLO si la skill necesita algo del usuario (MCP que no es de la app, llave en .secrets/, credencial por entorno, cabecera de autenticación, programa local que usa el cuerpo o un script, credencial pedida en prosa, cuenta de Google o Mercado Pago) y no tiene sección de requisitos en sus primeras 80 líneas; AVISO si la sección no dice qué hacer si falta. Calibrado sobre las 43 skills en tres pasadas (falsos en las dos direcciones: programa narrado en una referencia, changelog, el propio detector y su autoprueba, mcp__ccd_ de la app, sello de versión; faltantes: token pedido en prosa y Google Calendar). Autoprueba 40 de 40 con casos en las dos direcciones. Foto: 43 de 43, 27 con FALLO. -->
+<!-- skill v1.21 — 2026-09-26 — Centro de Mando, auditoría del ecosistema. (1) `validar_arsenal.py` revisaba SOLO la primera ruta: con `~/.claude/skills/golden-*` el shell le entrega 41 y el informe decía "UNIVERSO: 1 · 1 de 1 sanas" con salida 0. Un verde sobre un universo que nadie eligió. Ahora recorre todas, sin duplicar, y se niega en voz alta ante una ruta que no existe. Caso nuevo en `autoprueba_arsenal.py` con la mala SEGUNDA a propósito (31 de 31), y un mutante que mira solo la primera la hace fallar; el mutante entra por la variable VALIDAR_ARSENAL_MUTANTE. Corrido sobre el arsenal: 41 de 41, 38 sanas, 3 con aviso, 0 fallos, igual que una por una. (2) Tres cebos FALSOS de `autoprueba_inventario.sh` (dos credenciales y la cuenta publicitaria) se arman partidos, para que el repositorio público no los muestre de corrido (la compuerta de publicación y el vigilante los acusaban). El archivo sembrado queda idéntico y en el mismo orden: el primer intento movió la cuenta al final y la aserción "visible entre los 5 primeros" falló, así que se restauró el orden. 194 de 194, mismas líneas antes y después. Reportado a la fábrica. -->
+<!-- skill v1.20 — 2026-09-05 — el VERIFICADOR ADVERSARIAL tumbo cuatro cosas de la v1.19 el mismo dia, y las cuatro eran la clase que la v1.19 decia cerrar. (F6) `DECLARA_INEXISTENCIA` era ella misma una alfombra: un `any(w in frase)` sin ninguna comprobacion, asi que bastaba escribir "planeado" para tapar una cita muerta real — y el caso peligroso pasaba igual ("la skill `X` aun no la usamos, PERO ES LA QUE CORRE EL CIERRE" quedaba exenta). Se borra la lista entera: la existencia de una skill se comprueba con os.path.exists, no leyendo un adjetivo. (F9) Al ir a cubrir `EXCUSAS_CONDICIONALES` con un caso de banco se descubrio que su justificacion escrita era FALSA: RX_NOMBRE solo captura tokens `golden*` y `fer*`, o sea que el detector nunca pudo ver un `ripgrep`. La lista llevaba versiones apagando avisos del universo que esta skill SI controla, bajo una coartada que no correspondia a nada. Tambien se borra, con su cortador de frases, que quedo sin llamadores. (F8) La puerta CSS miraba el DOCUMENTO entero: bastaba declarar `--golden-x` en cualquier punto para tapar una cita real a `golden-x` en otro; ahora se exige que TODAS las apariciones vayan precedidas de `--`. (F7) El corte de frase no reconocia vinetas, asi que una lista sin puntuacion final era UNA frase y una excusa en el ultimo item silenciaba los de arriba. Banco de 11 a 19 casos: 9 fallas antes, 0 despues, y cada pieza con sabotaje aislado que la hace morder. Sobre las 189 skills: 30 referencias rotas y 3 avisos, los tres VERDADEROS. -->
+<!-- skill v1.19 — 2026-09-05 — barrido de LISTAS DE EXCEPCION del arsenal (encargo del Centro de Mando, misma clase que el B8 de golden-chatea-auditoria). conexiones.py traia una lista de excusas en prosa ("si el equipo", "si lo tiene", "opcional", "atajo", "si existe") que apagaba el aviso de cita muerta si alguna aparecia en +-120 caracteres alrededor del token. DOS defectos medidos con banco: (1) CONTAGIO POR PROXIMIDAD — la palabra "atajo" de una frase anterior, sin relacion, silenciaba una cita limpia; la ventana ademas se calculaba con prosa.find(), la PRIMERA aparicion del token en todo el documento y no la que se juzgaba. (2) La excusa se aplicaba tambien al ARSENAL PROPIO: una skill golden-* citada y ausente quedaba callada por decir "opcional" — pero "opcional" habla de si se USA, no de si EXISTE. Arreglado: la excusa se mide sobre la FRASE (corte por fin de frase y por parrafo, no por salto de linea simple: en Markdown el texto va envuelto y cortar por \n partia la frase en dos), y sobre golden-* no aplica en absoluto. Se exime solo la SINTAXIS (--golden-gold es variable CSS, se distingue por el guion doble, no por una lista de nombres) y la declaracion explicita de INEXISTENCIA ("planeado, no construido todavia", "nombre de trabajo") — que ya reporta el hallazgo, a diferencia de la de OPCIONALIDAD, que lo tapa. Nace scripts/autoprueba_conexiones.py (11 casos): 4 fallas antes del arreglo, 0 despues. Corrido sobre las 189 skills instaladas: 30 referencias rotas y 2 avisos. Se decidio NO eximir "por ejemplo" pese a dejar 1 aviso vivo en golden-video-editor: 2 avisos en 189 skills es senal, y ensanchar la lista para bajar a 1 es la pendiente que este mismo barrido combate. -->
+<!-- skill v1.18 — 2026-09-05 — mandato de FER: "de ti depende que todas [las skills] estén siempre al 100% funcionales", así que el punto 2 (autoevaluarse primero) deja de ser solo un chequeo que se REPORTA — ahora se AUTORREPARA en el acto si inventario.sh encuentra algo real, cada vez que esta skill se dispara, para cualquier tarea. El validador de arsenal (autoprueba de 23 casos) sigue aparte: si ESE falla, no se autorrepara a ciegas, porque es el propio criterio de juicio el que está en duda. Nueva "definición de sigo siendo mil" explícita al final del punto 2. -->
+<!-- skill v1.17 — 2026-09-05 — auto-auditoría pidió el mil de mil (FER). Dos hallazgos reales en el propio inventario.sh: (1) scripts/conexiones.py (import interno de validar_arsenal.py, encargo de FER 2026-09-03) solo estaba cubierto por el glob amplio scripts/* → DUDOSO; se agregó cita explícita en la sección del validador de arsenal. (2) un ejemplo ilustrativo dentro de un comentario de conexiones.py ("scripts/x.json...") se leía como cita real y salía 🔴 rota — reescrito sin el patrón de ruta literal. Re-verificado con inventario.sh: 0 rotas, 0 dudosos nuevos. -->
+<!-- skill v1.16 — 2026-08-22 — Fase 7 nueva: "Conectar con el Centro de Mando", SIEMPRE, sin excepción — al cerrar cualquier auditoría (con o sin reparación) se reporta a 🧠 GOLDEN - CENTRO DE MANDO vía mcp__ccd_session_mgmt__send_message, y al reparar cualquier skill golden-* se verifica/instala que su changelog declare esa conexión. Nuevo estándar 9 en estandares-golden.md (dimensión 6 de la rúbrica) para que esto se propague a TODAS las auditorías futuras, no solo a esta skill. Regla de FER: el Centro de Mando debe saber TODO — cambios, mejoras, y también cuando no hubo nada que mejorar — para que el ecosistema funcione como un solo sistema conectado, no skills sueltas. -->
+<!-- skill v1.15 — 2026-08-22 — Regla nueva en Modos de operación: cada invocación es una auditoría FRESCA, siempre — nunca se abrevia ni se omite por "ya se auditó" (ni por el propio auditor un segundo antes). Instrucción de FER: aunque hayan pasado segundos entre una reparación y el siguiente pedido de auditoría, corre el protocolo completo de nuevo leyendo el archivo tal como está en ese momento, sin reciclar el veredicto anterior de memoria. -->
+<!-- skill v1.14 — 2026-08-22 — Fase 0 punto 0 nuevo: "no nombró skill" ya NO dispara pregunta genérica. Hallazgo real de campo: en el chat ✅ SKILL golden-chatea-operacion, invocar el auditor sin nombre disparó la pregunta "sobre cuál corro la auditoría" pese a que el chat entero trataba de esa skill — el dato ya estaba en el contexto y no se leyó (misma fuga que feedback_datos_reales_antes_de_generar en otros dominios). Regla de FER: cada chat de Golden vive alrededor de UNA skill; sin nombre explícito, el objetivo se infiere del tema del chat, se informa cuál se dedujo, y solo se pregunta si el chat mismo es genuinamente ambiguo (dos skills en juego, o un chat sin skill propia como el Centro de Mando). Autonomía Golden actualizada para reflejarlo. -->
+<!-- skill v1.13 — 2026-08-22 — AUTO-AUDITORÍA (esta skill se aplicó a sí misma): inventario.sh 147/147 + sabotajes 38/38 en verde, self-audit sin rotas/huérfanas/dudosos, sintaxis OK, sin secretos reales (solo el fixture a propósito del banco), blindaje 8/8. Investigado el hallazgo reportado en la auditoría de golden-chatea-pro-config-comentarios ("inventario.sh reportó chflags uchg cuando el mecanismo real era chmod 0444/0555"): CONFIRMADO real mecanismo de esa skill = chmod (0 nodos con uchg, 0 escribibles, verificado con find -flags/-perm y ls -lO), pero el bug YA estaba corregido antes de esta sesión por el fix C8 de la v1.12 (blindaje contado N de M nodos con rama chmod separada, `find -perm +0200`) — corrida en vivo contra esa skill hoy: "Blindada por permisos chmod — 0 de 6 nodos escribibles", NUNCA chflags uchg. Único hallazgo nuevo real (Recursos): dependencias de scripts (perl, python3, node) no estaban declaradas con su fallback en Fase 0 — agregado el punto 4. Esta skill misma resultó estar blindada por AMBOS mecanismos a la vez (chflags uchg Y chmod 0444/0555) — redundante pero no dañino; se re-blinda con el estándar de la casa (chflags -R uchg) al cerrar. -->
+<!-- skill v1.12 — 2026-08-21 — ronda contra el CUARTO expediente adversarial (v1.11 NO RATIFICADA). Principio rector de la ronda: toda regla arreglada en un sitio se busca en su GEMELO antes de sellar — las 3 bloqueantes eran la misma forma (la regla existía en una rama y faltaba en la hermana). inventario.sh: B1 el glob AMPLIO también respeta barras (la rama que lo manda a DUDOSOS usaba prefijo crudo case "$rel" in "$pbase"/* donde * cruzaba /; ahora glob_matches TAMBIÉN ahí — references/* cubre UN nivel y references/hondo/masfondo/hondisimo.md profundo sin cita vuelve a ser huérfano); B2 FRONTERA IZQUIERDA compartida (constantes FRONT+PFX, UNA sola para REF_RE/GLOB_RE/ROOT_RE): el segmento canónico no abre cita con guion o letra pegada — "./ad-assets/x.png" fabricaba assets/x.png (12 de las 43 "rotas" de claude-ads) y "managed-agents/" fabricó la ÚNICA "rota" de claude-api; extracción por perl con lookbehind y delimitador m{} (el patrón está lleno de /; con m/.../ perl moría y un 2>/dev/null lo volvía verde mentiroso — ese stderr ya NO se traga y el rc se grita); B3 prefijos de VARIABLE como CLASE, no 3 literales: ${HOME}/$HOME se resuelven de verdad (ruta absoluta reconocible), cualquier otro $VAR/, ${VAR}/, <VAR>/ pegado al segmento canónico se resuelve contra la skill → hermanas → DUDOSOS con el prefijo declarado, JAMÁS rojo ($CLAUDE_PLUGIN_ROOT sembrado); B4 resolución SIMÉTRICA de rotas — la misma escalera que los huérfanos: (a) dir del citante, (b) raíz, (b2) sufijo con frontera de segmento en OTRA carpeta de la misma skill → DUDOSO "cita imprecisa" (gemelo intra-skill de EN_HERMANA), (c) hermanas; solo rojo si todo falla (claude-ads: 26/43 existían resueltas contra el citante — estructura de sub-skills — y 4 más en ads/references/; contraste medido claude-ads 43→1, claude-api 1→0); C5 SYMLINKS de verdad (find -L en listado, texto vivo, EXISTING, señales, sintaxis; grep -r de BSD no los sigue y un symlink a un archivo con api_key salía "Sin patrones"; symlink que resuelve = existente, el que no = listado aparte); C6 extensiones en MAYÚSCULAS (.MD/.SH) vía minusculas() e -iname en todas las superficies; C7 el contador de description corta en la siguiente clave YAML raíz, no solo en --- (watch: 520 impresos vs ~247 reales, 21/92 skills); C8 blindaje por N de M nodos (find -flags +uchg), nunca por el inodo de la raíz — "Blindada" solo M de M, si no "PARCIAL: N de M" en rojo, gemelo chmod contado igual; C9 guardia de shell (sin BASH_VERSION → exec bash o muere: zsh sin word-splitting dejaba TEXT_EXTS como un token y el informe salía verde MENTIROSO); C10 límites DECLARADOS en Fase 0 (rutas externas sin segmento canónico fuera de alcance, globs segmento a segmento, sin normalización NFD) y TERCERA limitación del sello en Fase 5 (find -type f no ve symlinks: repuntar un enlace no altera md5 ni conteo — variante que sí los cuenta declarada). autoprueba_inventario.sh: CORPUS DE REGRESIÓN REAL — sección nueva con casos COPIADOS de skills reales que el constructor NO eligió, origen documentado (sub-skills de claude-ads, prefijos-trampa ad-assets/managed-agents, $CLAUDE_PLUGIN_ROOT y ${HOME}, .MD/.SH reales, trío de symlinks del verificador, description con metadata de watch) y REGLA ESCRITA: cada ronda de reparación añade al corpus al menos un caso de una skill real que el constructor no eligió; cuarto sandbox skill-blind (raíz sola con uchg = PARCIAL); f8 corre también bajo zsh y su description con metadata prueba C7; guardia de shell propia; suite de sabotajes 29→38 (s17 frontera, s18 rescate-citante, s19 $VAR, s20 find sin -L, s21 -iname, s22 corte de description, s23 blindaje un inodo, s24 guardia shell, s25 sufijo interno). LECCIÓN DE LA PROPIA RONDA (gemelos también en el banco): dos sabotajes viejos quedaron NEUTRALIZADOS por redundancia del detector nuevo — s4 (EXISTING sin SKILL.md) dejó de doler porque el rescate de raíz (b) salva por -e directo, y s11 (strips literales de $SKILL_DIR) porque la clase genérica $VAR es su superconjunto; el código redundante se RETIRÓ (una regla, un lugar) y ambos sabotajes se repuntaron al blanco vivo: s4 = EXISTING mutilado + sin rescate (b), s11 = prefijo HOME sin resolver (caso sembrado ${HOME}/taller/scripts/externo.sh — sin resolución fabrica la rota scripts/externo.sh). Cifras medidas 2026-08-21: banco 147/147 bash y 147/147 zsh (idéntico), sabotajes bash 38/38 mordidos + muestreo zsh 3/3 (s17, s20, s24), contrastes claude-ads 43→1 rotas (la residual scripts/foo.py es un placeholder de doc en tests/, evaluada a mano; 4 pasan a DUDOSO "cita imprecisa" con su ruta real ads/references/ declarada), claude-api 1→0 (la fabricada murió), all-deploy 0/0, golden-pdf-check 0/0, golden-web 0/0, self-audit 0 rotas 0 huérfanas 0 dudosos -->
+<!-- skill v1.11 — 2026-08-21 — ronda contra el tercer expediente adversarial (v1.10 NO RATIFICADA, 12 fallas). inventario.sh: F1 el * de un glob ya NO cruza barras (glob_matches compara segmento a segmento: assets/*.json ya no cubre assets/sub/deep.json) y el glob AMPLIO de carpeta (dir/*) deja de eximir en silencio — va a DUDOSOS igual que el token desnudo (un references/* en un test de claude-ads apagaba la carpeta entera); F2 normalización SIMÉTRICA en limpia_texto, la ÚNICA función por la que pasa el texto de las DOS direcciones: los prefijos $SKILL_DIR/, ${SKILL_DIR}/, <SKILL_DIR>/ (idioma de cita de las skills oficiales) y la ruta absoluta propia se descuentan igual en rotas y en huérfanos (antes $SKILL_DIR/references/x.md como única cita dejaba a x.md huérfana, y <SKILL_DIR>/scripts/audit.py fabricaba el DUDOSO /scripts/audit.py en all-deploy); F3 pliegue español explícito (minusculas(): tr no pliega acentos en locale C — BITÁCORA.md no casaba es_historia), aplicado en todo sitio que compara en minúsculas; F5c menciona_ruta endurece el límite DERECHO (tras el match no puede seguir .alfanumérico: guia.md.bak ya no salva a guia.md) y los límites viven en IZQ_LOCAL/IZQ_ABS/DER_RUTA saboteables; F6 lista de formatos UNIFICADA en TEXT_EXTS (una variable para referencias, ARCHIVOS y SEÑALES; +.txt .yml .css .xml .yaml — ci.yml de all-deploy y golden-print.css de golden-pdf-check eran citas vivas invisibles); F7 es_fixture solo exime en contexto SELF-AUDIT (ES_SELF_AUDIT): los selftest/autoprueba de otras skills son scripts reales y sus citas cuentan (assets/selftest-sample.md de golden-pdf-check sale de DUDOSOS); F8 el verde de huérfanos no se imprime con archivos sin cita en DUDOSOS — "0 huérfanos confirmados · N en duda"; F9 truncado por CARACTERES (trunca() con python3), no por bytes (cut -c partía multibyte y imprimía mojibake), y los bloques de señales reportan rutas RELATIVAS; F12 rutas con espacios entre backticks/comillas cuentan (existente=viva, faltante=DUDOSO por regla de la duda — claude-ads tiene 5 archivos con espacio). autoprueba_inventario.sh: TRES sandboxes (banco principal + self-audit para es_yo/es_fixture + caso F8), un caso por CADA formato de TEXT_EXTS en las DOS direcciones, casos m7/m8, BITÁCORA.md, precios-sin-changelog.md (el que SKILL.md citaba como medido y no estaba sembrado), normalización, espacios, glob amplio/profundo y trampa de truncado verificada con iconv; suite de sabotajes ampliada a 29 (s1-s16 + 13 formatos) — REGLA DE LA CASA: toda corrección nueva del detector entra con su sabotaje en la suite, viva donde viva (los 9 sabotajes de comportamiento que el tripwire de ramas no cubría ahora muerden). Además: F10 UNA regla de puntaje idéntica en SKILL.md y rubrica.md (base determinista = suma tras restas; ajuste holístico declarado aparte con su porqué); F11 estandares-golden.md deja de fijar censo de la familia chatea (arsenal vivo, ejemplos marcados como ejemplos); EXTRA receta del md5 canónico declarada en Fase 5 con su limitación (no incluye nombres; el conteo de archivos acompaña siempre) -->
+<!-- skill v1.10 — 2026-08-21 — ronda contra el segundo expediente adversarial (v1.9 NO RATIFICADA). TRES CLASES MADRE muertas en inventario.sh, no parcheadas: CLASE 1 identidad por SUBSTRING — (g) la guardia "dueña única Y nombrada" casa el nombre de la hermana con límites de palabra (nombra_duena; guion/guion bajo son parte del nombre): "cro" ya no matchea dentro de 33 skills ni copywriting dentro de golden-copywriting, y sin nombre con límites → DUDOSOS; (h) es_historia/es_fixture ANCLADOS a nombre base exacto o prefijo estricto clave+[-_.] — "precios-sin-changelog.md" ya no queda exento (el sufijo se prohibió a propósito: cualquier sufijo re-admite ese caso); (i) el rescate de huérfanos casa la RUTA RELATIVA COMPLETA (dir+base, desde la raíz, en forma absoluta de esta skill, o resuelta desde el dir del citante) con límites — references/manual.md ya no salva a scripts/manual.md — y las URLs (esquema://) se borran del texto antes de extraer refs y de casar menciones. CLASE 2 cobertura sin ancla — (j) el token DESNUDO ("references/", "scripts/" pelados) NO exime huérfanos: cobertura real = dir específico, glob o cita; lo cubierto solo por token desnudo va a DUDOSOS (cobertura total explícita se declara con glob scripts/*); (k) autoexclusión es_yo: en self-audit las cadenas/echo del propio inventario.sh no cuentan como mención (su ":296 mover a references/" se auto-eximía). CLASE 3 banco de memoria — (l) TRIPWIRE DE PARIDAD en autoprueba_inventario.sh: extrae textualmente las ramas de los case del detector (clasificador de tokens + es_historia + es_fixture) y las compara contra un MANIFIESTO declarado en el banco; rama nueva sin caso = "rama sin caso: X" y banco en rojo, manifiesto huérfano = "caso sin rama: X" — la promesa v1.9 de "un caso por cada rama" pasa de manual a verdadera POR CONSTRUCCIÓN; además modo `sabotajes` re-corrible: s1 dueña -eq→-ge, s2 es_fixture apagado, s3 autoexclusión del rescate quitada, s4 SKILL.md fuera de EXISTING, s5 manifiesto mutilado — los 5 TUMBAN el banco (medido 2026-08-21: 67/67 en verde y 5/5 mordidos). Puntuales: (m) .js entra al barrido de texto vivo (SINTAXIS ya le corría node --check); .ts evaluado: cero en el arsenal, no se agrega hasta que exista; (n) rutas citadas aceptan áéíóúñü y mayúsculas (clases de bytes UTF-8, funcionan en locale C y UTF-8) con caso acentuado sembrado en ambas direcciones; cifras de censo del arsenal ya no se fijan en el texto vivo (se derivan al correr) -->
+<!-- v1.10.1 (2026-08-21, centro de mando): SELF_PATH del banco capturado en nivel superior — bajo zsh, $0 dentro de funciones es el nombre de la funcion y el modo sabotajes moria en silencio (5/5 en bash, 4/5 en zsh); ahora identico en ambos shells. Caso: corrida de verificacion del CdM. -->
+<!-- skill v1.9 — 2026-08-21 — ronda contra el expediente del verificador adversarial (v1.8 NO RATIFICADA). inventario.sh: (a) el escaneo de referencias vivas barre .md .py .sh .json .liquid .html .csv, no solo .md (rota citada en comentario de un .py era invisible); (b) citas de directorio RELATIVAS desde dentro de references/ se resuelven contra el directorio del archivo que cita (caso golden-web: arte-generativo-templates/ dejaba 2 huérfanos falsos); (c) la degradación cross-skill a ℹ️ exige dueña ÚNICA + mención de esa hermana por nombre en el texto vivo — cualquier otra colisión va a DUDOSOS con la lista (66 rutas relativas vivían en 2+ skills del arsenal — censo de ese día; la cifra no es vigente, se deriva al correr); (d) skills/<hermana>/SKILL.md ahora se captura y verifica (antes invisible por exigir segmento canónico); (e) SIMETRÍA de historia en huérfanos: la mención que salva debe estar en texto vivo (sin changelogs, sin comentarios HTML, sin fixtures) y parecer ruta ("/nombre.ext") — una palabra suelta no salva; (f) material intruso baja de 🔴 a ⚠️ "mover a references/" (no es rotura, es orden). autoprueba_inventario.sh reescrita: extractores de bloque para TODAS las secciones (rotas, huérfanas, ℹ️, DUDOSOS, hermanas rotas, hermanas OK, intrusos), un caso sembrado por CADA rama del case (promesa manual en esta versión; desde v1.10 la garantiza por construcción el tripwire de paridad), conteos exactos por bloque — 38/38 con el detector de esa versión, y los 4 sabotajes del verificador (s7 rotas-de-hermana-como-OK, s8 sin-forma-corta, s9 sin-rescate-EN_HERMANA, s10 hermana-nunca-existe) hacen FALLAR el banco (mordida demostrada sobre copias en tmpdir). SKILL.md:puntero py_compile sin número de línea muerto; estandares-golden.md deja de afirmar el blindaje de terceros y lo marca como foto fechada -->
+<!-- skill v1.8 — 2026-08-21 — inventario.sh: detector de referencias reescrito contra las 5 clases de falso positivo del autoevalúo 2026-08-19/20: (1) cross-skill se verifica contra ~/.claude/skills, con rescate de citas escritas como locales que en realidad viven en una hermana (caso golden-ads → 01-investigacion-360.md, ahora línea informativa, no rotura); (2) rutas con ~ se expanden antes de probar existencia; (3) citas por directorio o glob cubren huérfanos (los 42 componentes vivos de golden-shopify y las fonts de golden-pdf-check salieron de la lista de borrado); (4) comentarios HTML <!== ==> son historia, no referencias vivas; (5) archivos changelog/bitácora/historial son historia — sus menciones no cuentan como refs vivas (las 3 "rotas" de golden-investigacion-mercado eran entradas de changelog) y ellos mismos nunca son huérfanos. Huérfano = archivo cuyo NOMBRE no aparece en ningún archivo de texto de la skill y que ningún directorio/glob citado cubre. Ante duda NO se marca rojo: se cuenta en la línea DUDOSOS: N. Nuevo scripts/autoprueba_inventario.sh: banco adversarial sembrado en tmpdir (5 clases + huérfano por glob que NO deben marcarse, más rota REAL y huérfano REAL que SÍ) — 16/16 con el script nuevo y 10 fallas de 16 con el viejo, o sea el banco sabe morder. Conserva intacto el arreglo v1.7 de hermanas short-form. Contraste real de banderas rojas: golden-shopify 42→0, golden-ads 2→0, golden-investigacion-mercado 3→0, golden-pdf-check 7→1 (brand.md, hueco de cita genuino) -->
+<!-- skill v1.7 — 2026-08-11 — inventario.sh reconoce la forma CORTA de rutas a hermanas (`<hermana>/references/x.md` sin prefijo skills/): antes el mismo archivo salía ✅ verificado como hermana Y 🔴 roto como local (falso rojo medido en golden360, reportado por su fábrica vía red sináptica); ahora la forma corta se verifica contra la hermana y solo lo local sin dueño existente cuenta como local. Probado contra caso malo plantado: la rota local y la hermana-corta rota siguen cazándose. · v1.6 · inventario.sh detecta material intruso que se publicaría al marketplace (carpetas fuera de references/scripts/assets/agents, archivos sueltos en la raíz) — cazó un .claude/settings.local.json auto-shippeado; changelog reconoce **Versión** y ## Changelog además del comentario HTML; rúbrica cita ast.parse en vez de py_compile -->
+<!-- skill v1.5 · inventario.sh distingue skills hermanas: menciones con ruta a ~/.claude/skills/<otra>/ se verifican contra la hermana (existe = verificada, no existe = rota aparte) en vez de marcarse como referencia local rota -->
+<!-- skill v1.4 · puntaje HOLÍSTICO: el total es un veredicto de calidad real del conjunto, no una suma que se rellena hasta 1000; nunca inflar con features de relleno; reserva que solo cierra el uso real se declara y baja el número con honestidad (feedback FER 2026-07-12) -->
+<!-- skill v1.3 · blindaje al cierre: skill golden- que cierra en 1000 sin pendientes se blinda sola (chflags uchg); terceros y skills con pendientes no se blindan -->
+<!-- v1.2 · meta de reparación = 1000 EXACTO (no ≥950): si el hallazgo tiene evidencia se arregla; solo se detiene antes por puntos que dependan de un dato del dueño -->
+<!-- v1.1 · auto-auditada 900→1000: ast.parse en vez de py_compile (falso error en blindadas), backups a ~/.claude/skill-backups (no contaminar skills/), rollback si la reparación empeora, manejo de nombre no encontrado, ejemplo de hallazgo, barrido  multi-formato, frontera nítida con skill-creator -->
+<!-- v1.0 · rúbrica 1000 pts / 7 dimensiones · inventario por script · protocolo de reparación con blindaje -->
+
+Esta skill convierte cualquier skill instalada en una skill de nivel comunidad: la lee entera, la mide contra una rúbrica fija de 1000 puntos, entrega un informe accionable y aplica los arreglos. El estándar de salida es el mismo que ya alcanzaron golden-investigacion-mercado y golden-pdf-check: lista para usarse mil veces sin supervisión.
+
+## Las listas de excepción de esta skill (y de cualquier validador)
+
+Todo validador acumula excepciones para no gritar en falso, y **una lista blanca que
+crece para silenciar hallazgos deja de ser catálogo y pasa a ser alfombra**. Esta skill
+juzga a las demás, así que hoy **no tiene ninguna lista de excusas en prosa**: tuvo dos
+y las dos cayeron el mismo día, ante el verificador adversarial.
+
+- `EXCUSAS_CONDICIONALES` se justificaba como "usa `ripgrep` si lo tiene en el PATH".
+  **Esa justificación era falsa:** `RX_NOMBRE` solo captura tokens `golden*` y `fer*`, o
+  sea que el detector nunca pudo ver una herramienta de terceros. La lista llevaba
+  versiones apagando avisos del universo que esta skill *sí* controla, bajo una coartada
+  que no correspondía a nada.
+- `DECLARA_INEXISTENCIA` se justificaba como "'planeado, no construido' ya reporta el
+  hallazgo". Bastaba una palabra, sin comprobación alguna, y tapaba incluso la frase que
+  decía que la skill **se usa**.
+
+**La regla que queda: la existencia se comprueba con `os.path.exists`, no leyendo un
+adjetivo.** Ninguna declaración en prosa, del signo que sea, sustituye a esa comprobación.
+Los 3 avisos que esto deja en 189 skills son verdaderos, y por eso se quedan.
+
+Si alguna vez vuelve a hacer falta una excepción, se somete a estas reglas duras:
+
+1. **La excusa alcanza a su FRASE, nunca a sus vecinos.** Una ventana de ±N caracteres
+   no respeta frases: medido el 2026-09-05, la palabra "atajo" escrita para otra cosa
+   silenciaba una cita limpia a 60 caracteres de distancia. El corte es por fin de frase
+   y por párrafo — nunca por salto de línea simple, porque en Markdown el texto va
+   envuelto y eso parte una frase en dos.
+2. **Ninguna excusa exime al universo que la skill SÍ controla.** Una skill `golden-*`
+   existe o no existe en `~/.claude/skills`, y eso se comprueba. "Opcional" describe si
+   se **usa**, no si **existe**. Las excusas condicionales quedan para herramientas de
+   terceros (`ripgrep`, `jq`, `fd`), que sí pueden faltar.
+3. **Se exime una declaración de INEXISTENCIA, jamás una de OPCIONALIDAD.** "Planeado,
+   no construido todavía" ya reporta el hallazgo — el autor lo dijo. "Opcional" no dice
+   nada sobre si existe: tapa. Esa es la línea entera entre un control y una alfombra.
+
+Lo que no es una cita se distingue por **sintaxis**, no por una lista de nombres
+permitidos: `--golden-gold` lleva guion doble porque es una variable CSS.
+
+Banco de regresión: `python3 scripts/autoprueba_conexiones.py` (19 casos, salida 0 =
+pasa). **Se corre después de tocar `RX_ARSENAL_PROPIO` o `_solo_como_variable_css`.**
+**Y debe MORDER ante el sabotaje aislado de cada pieza**: un banco que solo prueba el
+efecto combinado no protege ninguna de las partes. Antes de añadir una entrada a cualquiera de esas listas, la
+pregunta obligatoria es la del mandato: *¿esta entrada entró para que el validador
+dejara de gritar sobre algo que sí es una anomalía?* Si la respuesta es sí, no es una
+excepción: es un hallazgo enterrado, y sale a un control propio.
+
+**Principio rector:** una skill se audita como se auditaría un empleado nuevo — no por lo que dice que hace, sino por lo que un modelo que la lea por primera vez lograría hacer con ella. Cada hallazgo debe responder: "si Claude ejecuta esta skill mañana en un chat limpio, dónde se tropieza".
+
+## Modos de operación
+
+Detecta el modo por lo que pidió el usuario. En la duda, aplica AUDITA+ARREGLA (es lo que casi siempre quiere).
+
+| El usuario dice | Modo |
+|---|---|
+| "audita", "califica", "qué le falta", "revísala" | **AUDITA** — informe completo + plan de arreglo, sin tocar archivos |
+| "mejórala", "arréglala", "déjala mil de mil", "optimízala", "perfecciónala" | **AUDITA+ARREGLA** — informe + reparación + re-auditoría hasta 1000 |
+
+**Cada invocación es una auditoría NUEVA, siempre.** No existe "ya se auditó esto" como motivo para abreviar, omitir fases o reciclar un veredicto anterior — ni el tuyo propio de hace un segundo. Cada vez que te llamen sobre una skill, corre el protocolo completo (Fases 0-4, y 5-6 si toca reparar) leyendo el archivo tal como está EN ESE MOMENTO, sin importar si pasaron segundos, minutos o días desde la última pasada, y aunque tú mismo hayas sido quien la reparó justo antes. El estado del archivo pudo cambiar (otro chat lo tocó, el usuario lo editó a mano, otra corrida lo reparó) — el único veredicto válido es el que sale de leerlo de nuevo, nunca el que recuerdas. (Regla de FER, 2026-08-22.)
+
+Regla de autonomía Golden: decide todo lo decidible por convención e INFORMA. No preguntes qué arreglar — la rúbrica lo dicta. La única pregunta permitida es cuando falta información que solo el usuario tiene, y "cuál skill auditar" YA NO cuenta como esa pregunta salvo ambigüedad real (ver Fase 0, punto 0).
+
+## Flujo completo
+
+### Fase 0 — Localizar y radiografiar
+
+0. **Si el usuario no nombró ninguna skill**, el objetivo es la skill de la que trata ESTE chat — no se pregunta cuál. Cada chat de Golden vive alrededor de UNA skill o proyecto: infiere el nombre del tema/título de la conversación (ej. un chat titulado "✅ SKILL golden-chatea-operacion" o donde se viene construyendo/discutiendo esa skill → el objetivo es `golden-chatea-operacion`), resuelve su ruta con el punto 1 y sigue. INFORMA cuál dedujiste ("Auditando golden-X, la skill de este chat") antes de arrancar. Solo pregunta si el chat mismo es ambiguo de verdad: dos skills distintas en juego a la vez, o un chat genérico (ej. el Centro de Mando) sin skill propia asociada. (Regla de FER, 2026-08-22 — ver memoria `feedback_auditor_sin_nombre_es_skill_del_chat`.)
+1. Resuelve la ruta: `~/.claude/skills/<nombre>` (sigue symlinks si los hay). Si no existe con ese nombre exacto (typo, nombre a medias como "la de carritos"), lista `~/.claude/skills/`, elige la coincidencia más cercana, INFORMA cuál elegiste y sigue. Solo pregunta si hay dos candidatas realmente ambiguas.
+2. Corre el inventario determinista:
+   ```bash
+   bash ~/.claude/skills/golden-skill-auditor/scripts/inventario.sh <ruta-de-la-skill>
+   ```
+   El script reporta: blindaje contado por N de M NODOS (find -flags +uchg contra el total; "Blindada" solo con M de M — un solo inodo con uchg en la raíz es "PARCIAL" en rojo, y el gemelo chmod se cuenta igual), árbol de archivos con líneas (symlinks que resuelven incluidos vía find -L, y los que no resuelven listados aparte), frontmatter (la description se cuenta cortando en la SIGUIENTE clave YAML de nivel raíz, no solo en el --- de cierre — license/metadata/allowed-tools no se suman), referencias rotas (mencionadas pero inexistentes, barriendo texto vivo en TODOS los formatos de TEXT_EXTS: .md .txt .py .sh .js .json .css .html .xml .yaml .yml .liquid .csv — una sola lista compartida con ARCHIVOS y SEÑALES, con extensiones también en MAYÚSCULAS vía -iname; una cita solo es rota si falla la escalera completa: dir del citante → raíz de la skill → sufijo en otra carpeta de la misma skill (→ DUDOSO "cita imprecisa") → hermanas), archivos huérfanos (existen pero ninguna cita con la ruta relativa completa los menciona; el segmento canónico solo abre cita con frontera izquierda limpia — jamás un guion o letra pegada, "ad-assets/" no fabrica citas de assets/ — y los prefijos de variable se tratan como clase: ${HOME}/$HOME se resuelven de verdad, $SKILL_DIR/, ${SKILL_DIR}/ y <SKILL_DIR>/ se descuentan, y cualquier otro $VAR//<VAR>/ se resuelve contra la skill o va a DUDOSOS con el prefijo declarado, nunca a rojo), la línea DUDOSOS con lo que exige confirmación a mano (incluye lo cubierto solo por un token desnudo tipo "references/" pelado o por un glob amplio tipo "scripts/*", que NO eximen — y el glob amplio también respeta las barras: references/* alcanza UN nivel, no toda la profundidad — y las rutas con espacios citadas entre backticks/comillas que no existen), y chequeo de sintaxis de scripts (bash -n / ast.parse de Python / node --check, symlinks y .SH en mayúsculas incluidos, sin escribir nada en la skill auditada). Cuando no hay huérfanos confirmados pero sí archivos sin cita en DUDOSOS, el informe dice "0 huérfanos confirmados · N en duda" — nunca el verde pelado. El frontmatter se lee con `scripts/leer_frontmatter.py` (invocado desde `inventario.sh` línea 276), no con un heredoc — P61 (27-sep): un heredoc guarda su contenido en un temporal, y en una sesión cuyo sandbox no dejaba escribirlo, la salida venía vacía y el inventario decía "SIN FRONTMATTER" sobre una skill sana sin que nada lo delatara.
+   Límites DECLARADOS del detector (existen; callarlos sería mentir por omisión): (1) las rutas externas SIN segmento canónico (~/lab/bin/x.sh, sin references|scripts|assets|agents ni skills/<otra>/SKILL.md) quedan FUERA del alcance del barrido de referencias — el detector no puede distinguirlas de prosa; (2) los globs se comparan segmento a segmento estilo pathlib (el * nunca cruza /), también en la rama de DUDOSOS; (3) no hay normalización Unicode NFD↔NFC: macOS guarda nombres en NFD y una cita tecleada en NFC de un nombre acentuado puede no casar byte a byte — ante un huérfano/rota con acentos, confirmar a mano antes de creerle.
+   Si vas a tocar el detector de referencias, corre antes y después su banco adversarial:
+   ```bash
+   bash ~/.claude/skills/golden-skill-auditor/scripts/autoprueba_inventario.sh
+   bash ~/.claude/skills/golden-skill-auditor/scripts/autoprueba_inventario.sh sabotajes
+   ```
+   El banco siembra un árbol en tmpdir, corre todas sus aserciones con conteo exacto por bloque y además verifica PARIDAD banco↔detector: extrae las ramas de los case de inventario.sh y las compara contra su manifiesto de casos — una rama nueva sin caso sembrado pone el banco en rojo con "rama sin caso: X", así que "un caso por cada rama" es verdad por construcción, no por memoria del constructor. El modo `sabotajes` auto-verifica la mordida: aplica sabotajes conocidos al detector en copias tmpdir y exige que el banco los tumbe. El tripwire de ramas cubre los case; los COMPORTAMIENTOS fuera de case los cubre la regla de la casa: **toda corrección nueva del detector entra con su sabotaje en la suite, viva donde viva** (así la suite integrada cubre todo lo declarado en el changelog, no solo lo que un case delata). Un cambio al detector sin banco Y sabotajes en verde no se sella, y el banco debe pasar idéntico bajo bash y zsh.
+3. Si el script falla o no existe, haz el inventario a mano con `find`, `wc -l` y lectura del frontmatter — la auditoría no se detiene por el script.
+4. Dependencias del script (binarios en PATH, sin librerías externas): `bash` (guardia C9 re-ejecuta si el shell activo no es bash), `perl` (extracción de referencias — si falta, la extracción muere con `🔴 ERROR: extracción de referencias (perl) falló` y esa sección del informe no es confiable, el resto sigue), `python3` (validación de sintaxis `.py` vía `ast.parse` y el truncado seguro de líneas largas — si falta, esos dos puntos fallan silenciosamente: un `.py` roto puede reportarse como sintaxis OK y las líneas truncadas de SEÑALES pueden salir vacías; confirmar ambos a mano si `python3` no está en PATH), y opcionalmente `node` (solo para `node --check` de `.js`; su ausencia ya se reporta como advertencia en el propio informe, no detiene nada). Sin fallback automático: si falta `perl` o `python3`, la Fase 0 sigue con el inventario a mano del punto 3 para lo que ese binario cubría.
+
+### Fase 1 — Lectura total
+
+Lee TODOS los archivos de la skill, completos, sin excepción: SKILL.md, cada reference, cada script, cada asset legible. Los archivos >2000 líneas se leen por tramos hasta cubrirlos enteros. Esta fase no se recorta: una auditoría que no leyó todo no puede afirmar "no omití ningún detalle", que es exactamente la promesa de esta skill. Mientras lees, anota en una lista corrida cada fricción con su archivo:línea.
+
+### Fase 2 — Calificación por rúbrica
+
+Lee `references/rubrica.md` y califica las 7 dimensiones (1000 pts en total):
+
+1. **Activación** (120) — el description dispara cuando debe y NO dispara cuando no debe
+2. **Estructura** (140) — divulgación progresiva, SKILL.md ≤500 líneas, punteros claros
+3. **Instrucciones** (200) — imperativas, con el porqué, sin contradicciones, con ejemplos
+4. **Proceso y flujo** (180) — pasos completos, defaults autónomos, manejo de errores, definición de "terminado"
+5. **Recursos** (120) — scripts que corren, referencias vivas, sin archivos muertos
+6. **Estándares Golden** (120) — lee `references/estandares-golden.md` y verifica cada uno
+7. **Robustez** (120) — versionado, consistencia interna, degradación elegante
+
+Cada punto restado necesita evidencia citable (archivo:línea o ausencia concreta). Prohibido restar "por sensación".
+
+Regla de puntaje (ÚNICA, escrita idéntica en SKILL.md Fase 2 y en references/rubrica.md, Cálculo y veredicto): la BASE del puntaje es determinista — la suma de las 7 dimensiones tras las restas con evidencia (mínimo 0 por dimensión). Sobre esa base se admite UN ajuste holístico, declarado APARTE con su porqué (ej. una reserva que solo cierra el uso real, o un defecto transversal que las dimensiones no capturan); el informe reporta base, ajuste y veredicto final. Nunca se infla la base con features de relleno ni se mueve el ajuste para alcanzar un número redondo.
+
+**Filosofía del ajuste (feedback FER 2026-07-12):** las 7 dimensiones son un lente para
+encontrar fallas, NO un banco de puntos que se rellena hasta 1000. El veredicto final es tu
+evaluación honesta de la calidad REAL del conjunto: 1000 significa "un experto que la lea por
+primera vez no le cambiaría nada relevante", no "acumulé arreglos hasta sumar 1000". Nunca subas
+el veredicto porque "agregué una feature que vale X": una feature nueva que no hacía falta no
+mejora la skill, la infla. Reparar un hallazgo real eleva la calidad y por eso sube el veredicto;
+agregar relleno para llegar al número, no. Si queda una reserva real que no se cierra con código
+(ej. la skill solo se probó en campo con un input; su promesa de ser genérica aún no se ejerció
+con un caso distinto), decláralo como ajuste holístico negativo con su porqué. **Honestidad >
+complacencia: un 970 honesto y explicado vale más que un 1000 de cortesía.**
+
+### Fase 3 — Verificación cruzada
+
+Los errores más caros viven ENTRE archivos, no dentro de uno:
+
+- Cada archivo que SKILL.md manda leer, existe y contiene lo prometido.
+- Los ejemplos usan los mismos nombres, cifras y formatos que las instrucciones.
+- El description promete exactamente lo que el cuerpo entrega (ni más ni menos).
+- Los nombres de skills hermanas que menciona existen hoy en ~/.claude/skills (los renombres las rompen en silencio).
+- Si depende de un MCP o tool externa, declara qué hacer cuando falte.
+
+### Fase 4 — Informe
+
+Entrega SIEMPRE este formato exacto:
+
+```
+# Auditoría: <skill> · <puntaje>/1000 · <veredicto>
+
+| Dimensión | Puntos | Nota |
+|---|---|---|
+(7 filas + total)
+
+## 🔴 Crítico (bloquea el mil de mil)
+- <hallazgo> — <archivo:línea> — <arreglo concreto>
+
+## 🟡 Mejorable
+- ...
+
+## 🟢 Lo que ya está bien
+- ... (esto también se reporta: protege lo bueno de futuras ediciones)
+
+## Plan de reparación
+1. ... (ordenado por impacto en puntos)
+```
+
+Veredictos: **ORO** 950–1000 (lista para comunidad) · **PLATA** 850–949 (sólida, pulir) · **BRONCE** 700–849 (funciona con huecos) · **EN OBRA** <700 (reestructurar).
+
+Así se ve un hallazgo bien escrito (evidencia + consecuencia + arreglo, no opinión):
+
+> 🔴 El script valida Python con `py_compile`, que escribe bytecode — `scripts/inventario.sh`, sección SINTAXIS DE SCRIPTS de la v1.0 — en una skill blindada la escritura falla y reporta un error de sintaxis FALSO. Arreglo: validar con `ast.parse` (solo lectura). *(Hallazgo real de la v1.0 de esta misma skill, ya corregido; se cita la sección y no un número de línea porque las líneas bailan con cada versión.)*
+
+Y así NO ("el script podría mejorarse", "la estructura se siente desordenada" — sin archivo:línea ni consecuencia, no vale como hallazgo).
+
+### Fase 5 — Reparación (solo en modo AUDITA+ARREGLA)
+
+1. **Backup primero, siempre:** `mkdir -p ~/.claude/skill-backups && cp -R <skill> ~/.claude/skill-backups/<nombre>-$(date +%Y%m%d-%H%M%S)`. Sin backup no se toca nada. NUNCA dentro de `~/.claude/skills/`: una copia con SKILL.md válido ahí se registra como skill duplicada y compite en el disparo.
+2. **Desbloquea si está blindada** (el pedido de arreglar del usuario ES la autorización):
+   - `chflags uchg` → `chflags -R nouchg <skill>`
+   - chmod 0444/0555 → `chmod -R u+w <skill>`
+3. **Arregla en orden del plan** (crítico primero). Reestructura sin miedo si la rúbrica lo exige: partir un SKILL.md monolítico en references, fusionar archivos redundantes, reescribir el description. Lo que NO se cambia: la intención y el conocimiento de campo de la skill — se reorganiza y se pule, no se reinventa. Textos que el dueño dictó verbatim se conservan intactos.
+4. **Registra:** añade o actualiza la línea de versión/changelog en el comentario HTML bajo el H1 de SKILL.md (patrón de la casa: `<!-- skill vX.Y · qué cambió -->`).
+5. **Blindaje al cierre** (política Golden: lo que quedó perfecto se protege):
+   - Si YA estaba blindada → re-blinda con el MISMO mecanismo que tenía (uchg → `chflags -R uchg`; chmod → `chmod -R a-w`).
+   - Si NO estaba blindada y es skill propia (golden-) que cierra en 1000 sin pendientes con dueño → blíndala con el estándar de la casa (`chflags -R uchg`) e informa. Una skill perfecta sin blindar se degrada con la primera edición descuidada.
+   - NO blindar: skills de terceros (rompe sus actualizaciones) ni skills que cierran con pendientes con dueño (van a necesitar edición pronto; se blindan al cerrar el pendiente).
+6. Borra el backup solo si el usuario lo pide; por defecto se queda.
+7. **Sello md5 canónico** (la receta de la casa, tal cual se usa en las actas):
+   ```bash
+   cd <skill> && find . -type f | sort | xargs md5 -q | md5 -q
+   ```
+   Limitaciones conocidas y declaradas: (a) el sello NO incluye los nombres de archivo — un
+   renombre que conserve el orden y el contenido no lo altera; por eso el conteo de archivos
+   (`find . -type f | wc -l`) acompaña SIEMPRE al md5 en las actas. (b) xargs parte las rutas
+   CON ESPACIOS (medido sobre claude-ads, que tiene 5): en skills con espacios en nombres se
+   usa la variante segura `find . -type f -print0 | sort -z | xargs -0 md5 -q | md5 -q` y el
+   acta declara cuál receta se usó. (c) `find . -type f` EXCLUYE los symlinks: repuntar un
+   enlace hacia otro destino no altera ni el md5 ni el conteo — el sello no lo ve. En skills
+   con symlinks se acompaña con la variante que sí los cuenta,
+   `find . \( -type f -o -type l \) | wc -l`, y si el contenido apuntado importa, el hash
+   con `find -L . -type f | sort | xargs md5 -q | md5 -q` (sigue el enlace y hashea el
+   destino); el acta declara qué variante se usó.
+
+### Fase 6 — Re-auditoría
+
+Repite Fases 1–4 sobre la skill reparada (lectura fresca, sin reutilizar la memoria de la primera pasada — los arreglos también introducen errores). La meta es **excelencia real, no un número redondo**: si un hallazgo tiene evidencia, se arregla — no se deja "porque ya alcanzó ORO". Pero arreglar sube el veredicto solo porque sube la calidad real; jamás se agrega relleno para "completar" 1000 (ver la filosofía de puntaje en Fase 2). Hay dos detenciones legítimas antes de 1000: (a) puntos que dependen de algo que solo el usuario tiene (ej. la palabra clave real del bot, etiquetas exactas de una plataforma cerrada) → se reportan como "pendientes con dueño" con lo que valen; y (b) reservas que solo cierra el uso real (ej. una skill genérica probada aún en un solo caso) → se declaran con honestidad y bajan el veredicto sin inflarlo.
+
+**Rollback:** si la re-auditoría sale PEOR que el puntaje previo a la reparación, restaura el backup completo, informa qué arreglo salió mal y reintenta solo los arreglos que sí sumaron. Empeorar una skill que funcionaba es el único fracaso inaceptable de esta skill.
+
+Cierre del informe final: puntaje antes → después, lista de cambios aplicados, ruta del backup y estado del blindaje.
+
+### Fase 7 — Conectar con el Centro de Mando (SIEMPRE, sin excepción)
+
+El Centro de Mando debe saber TODO lo que pasa en el ecosistema — auditorías, reparaciones, autos-mejoras, y también cuando NO hubo nada que mejorar (una skill limpia también es información: confirma que el ecosistema está sano). No es opcional y no depende de si hubo cambios.
+
+1. **Al cerrar CUALQUIER auditoría** (manual, automática, con o sin reparación), envía un mensaje a la sesión "🧠 GOLDEN - CENTRO DE MANDO - NO BORRAR" (localízala con `mcp__ccd_session_mgmt__list_sessions` buscando ese título si no tienes el session_id a mano, y envíalo con `mcp__ccd_session_mgmt__send_message`) con: qué skill se auditó, puntaje antes → después, qué se reparó (o "sin cambios — ya estaba en su techo" si no hubo hallazgos con evidencia), versión nueva si cambió, y desde qué chat se corrió. Nunca omitas este paso por "no hubo mejora" — reporta igual, con honestidad, que se verificó y quedó sana.
+2. **Instala la conexión en la skill auditada, no solo repórtala tú.** Al reparar cualquier skill golden-*, verifica que su SKILL.md declare (en el comentario de versión/changelog, o en una sección "Conexión con el ecosistema") que sus cambios relevantes se reportan al Centro de Mando — igual que ya lo hacen `golden-skill-auditor` y `golden360`. Si no lo declara, agrégalo como parte de la reparación (una línea basta: "Cambios relevantes de esta skill se reportan a 🧠 GOLDEN - CENTRO DE MANDO"). Así cada skill que pasa por esta auditoría queda conectada al mismo sistema nervioso, no como soldado suelto.
+3. **Mejoras que vienen de fuera del ecosistema** (un repositorio, video, o hallazgo que el usuario trae desde un chat de investigación/filtro de herramientas) y que se implementan en una skill durante esta auditoría: repórtalo al Centro de Mando igual que cualquier otra mejora, y menciona explícitamente el origen externo — el Centro de Mando es quien decide si eso se retransmite a otros chats relacionados (esta skill no le habla directo a esos chats, le habla al Centro de Mando).
+4. **Umbral de "vale la pena":** no inventes mejoras de relleno solo para tener algo que reportar (ver Fase 2, "el puntaje es un veredicto holístico"). Si de verdad no hay nada con evidencia, el reporte al Centro de Mando dice exactamente eso — la honestidad de "no había nada que mejorar" es tan valiosa como el hallazgo real.
+
+(Regla de FER, 2026-08-22: "el Centro de Mando debe saber siempre todo, de todos los chats, de todas las skills, para coordinar el ecosistema como un ejército unificado, no como soldados sueltos".)
+
+## Reglas de juicio (leer antes de calificar)
+
+- **Larga ≠ buena.** Una skill de 2000 líneas sin jerarquía puntúa PEOR que una de 300 bien apuntada. Premia contexto barato: que el modelo cargue solo lo que necesita.
+- **MUST-walls son bandera amarilla.** Muros de ALWAYS/NEVER sin porqué producen obediencia frágil. La instrucción fuerte es la que explica la consecuencia ("si el precio no es real, el render se paga dos veces").
+- **Sobreajuste es deuda.** Instrucciones que solo funcionan para el producto/ejemplo con que se probó la skill restan en Proceso, aunque "funcionen".
+- **Lo implícito no existe.** Si un paso vive solo en la cabeza del dueño (etiquetas exactas de un módulo, credenciales, un pantallazo pendiente), la skill debe declararlo como dato de entrada o pendiente explícito.
+- **Cada skill se compara con su trabajo, no con otras skills.** Una skill chica que hace una cosa perfecta puede ser ORO; un orquestador gigante con un cabo suelto no.
+
+## Además de "funciona": en cuántas vueltas
+
+Una skill que llega al resultado correcto en ocho idas y vueltas **no está bien hecha**, está
+compensando con esfuerzo lo que le falta en instrucciones. Al auditar, mide también el camino:
+
+- **Cuántos turnos** necesitó para el primer entregable aceptable. Si el usuario tuvo que
+  corregir tres veces lo mismo, esa corrección pertenecía al SKILL.md.
+- **Cuántas preguntas hizo** antes de arrancar. Preguntar lo que ya está en el intake o en la
+  memoria es una fuga: el dato existía y no se leyó.
+- **Cuánto costó.** Un flujo que quema el triple de tokens por el mismo resultado tiene un
+  problema de diseño, no de modelo.
+
+Esto **resta en Proceso y flujo (180)**: una skill que funciona pero cuesta el doble no es ORO.
+
+**Para probar sin gastar ni exponer datos reales:** genera los fixtures **con un script de Python**,
+no escribiéndolos token a token. Es más barato, produce sets grandes de verdad, y no saca datos del
+negocio mientras la skill todavía se está moviendo. Los datos reales entran cuando ya pasó la
+prueba, no antes.
+
+## Límites y delegación
+
+- Crear una skill desde cero → **skill-creator** (esta skill puede sugerirlo y pasar el brief).
+- Optimizar el description con evals automáticos de disparo → ofrecer el loop de **skill-creator** como paso extra opcional al final; el arreglo manual del description sí es de esta skill.
+- Auditar seguridad de código de una app → **cyber-neo**. Auditar un PDF → **golden-pdf-check**.
+- Skills de terceros (no golden-): se auditan igual, pero la dimensión 6 (Estándares Golden) evalúa solo lo universal (datos privados, autonomía) y reparte los puntos de marca en las demás verificaciones de esa dimensión; además NO se reescriben para redistribuir (licencia de terceros) — solo se reparan localmente.
+
+## Fronteras y desambiguacion
+
+Línea divisoria con skill-creator: diagnosticar, calificar y reparar una skill EXISTENTE = esta skill; crear una skill desde cero o correr evals con subagentes = skill-creator. Tampoco es para auditar PDFs (golden-pdf-check) ni seguridad de código de apps (cyber-neo).

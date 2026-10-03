@@ -1,0 +1,182 @@
+# Reglas de oro — Centro de Comando de Pauta
+
+1. **NUNCA inventar métricas.** Todo CPA, ROAS, CTR, CPM, gasto, frecuencia sale de datos reales
+   (MCP en vivo o informe subido). Si no hay dato, se escribe "sin dato". Las **proyecciones** (ej.
+   "a este CPA, con X presupuesto serían ~Y ventas") se rotulan SIEMPRE como proyección, no como hecho.
+
+2. **Unit economics = el BREAKEVEN, no un P&L.** Los datos (costo, precio, envío, entrega) sirven
+   SOLO para calcular **una cosa: el CPA/ROAS máximo rentable (breakeven)** — la línea que define
+   pausar vs escalar. NO es un informe de ganancia/pérdida ni contabilidad.
+   - **Para dar un VEREDICTO** sobre campañas existentes (gana o pierde? pausar/escalar?): SÍ se
+     necesita el breakeven; sin él solo hay ranking **relativo** ("A rinde mejor que B"), no absoluto.
+   - **Para MONTAR un test nuevo**: NO es bloqueante. Se lanza el test y se marca el breakeven como
+     `[PENDIENTE]` (sirve luego para fijar los topes de pausa/escala). No detengas el montaje por esto.
+   - Breakeven CPA = margen bruto por unidad. Breakeven ROAS = precio / margen bruto. En COD, descuenta
+     por **tasa de entrega efectiva** (ver `12-unit-economics.md`). Pide los datos concreto y sigue.
+
+3. **Confirmar antes de gastar.** Todo lo creado por MCP nace **PAUSED**. NUNCA llames
+   `ads_activate_entity` ni subas presupuesto sin **OK explícito** del usuario. Muestra el resumen
+   (objetivo, público, presupuesto, creativo) y espera confirmación. Activar = dinero real saliendo.
+
+4. **Compliance.** Cada copy/creativo cumple políticas Meta/TikTok: sin atributos personales
+   ("sufres de…?"), sin claims médicos/garantías de resultado, sin antes/después engañoso.
+
+5. 🔴 **País y moneda — LA TRAMPA DE LOS "CENTAVOS" (incidente medido 2026-09-03).**
+   Presupuestos y pujas van en la **unidad mínima de la moneda de la cuenta**, y esa unidad
+   **NO siempre son centavos**. El parámetro se llama `..._cents` y la documentación del MCP dice
+   "in cents": **ese nombre miente para las monedas sin decimales**.
+
+   | Moneda de la cuenta | Multiplicador | $50.000 se manda como |
+   |---|---|---|
+   | **COP, CLP, PYG** (y JPY, KRW, VND, ISK, HUF, CRC, TWD) — **sin decimales** | **×1** | `50000` |
+   | **USD, EUR, MXN, PEN, BRL** — con decimales | **×100** | `5000000` (= $50.000,00) |
+
+   Colombia, Chile y Paraguay son tres de los países donde opera Golden: **la mayoría de las
+   cuentas COP van ×1**. Multiplicar por 100 en una cuenta COP pone **100 veces el presupuesto**.
+
+   **Caso real:** el 2026-09-03, montando `LECOTERRA - VENTA WP - OPEN 1` en GOLDEN CP6 COL, se
+   pidieron $50.000 COP/día y se mandó `5000000` → el conjunto quedó en **$5.000.000 COP/día**.
+   No se gastó porque estaba en PAUSED; con la campaña activa habrían sido 5 millones en un día.
+
+   **PROCEDIMIENTO OBLIGATORIO, no opcional:**
+   1. Antes de mandar, mira `min_daily_budget_cents` en `ads_get_ad_accounts`. Es el testigo:
+      en cuentas **USD sale `100`** (= $1,00 → ×100); en cuentas **COP sale `3076`**
+      (≈ $3.076 COP → ×1). Si el mínimo "en centavos" da una cifra absurda al dividir por 100,
+      la moneda es de cero decimales.
+   2. **Después de crear o actualizar, RELEE el conjunto del servidor** (`ads_get_ad_entities`,
+      campo `daily_budget`) y compara el **texto renderizado** (`"$ 50.000 COP"`) contra lo que
+      pidió el usuario. La API devuelve el monto ya formateado: es prueba, no suposición.
+   3. Si no coinciden, corrige con `ads_update_entity` y **vuelve a releer**. Nunca reportes un
+      presupuesto que no hayas leído de vuelta del servidor.
+
+   Segmentación y tiempos de entrega, por país.
+
+6. **Accionable, no descriptivo.** Cada hallazgo → una acción: qué entidad tocar, a qué valor,
+   y por qué (con el número que lo respalda). Prohibido el reporte que solo describe.
+
+5-bis. 🔴 **INVENTARIO COMPLETO antes de construir, y la receta se LEE.** (Fallos medidos el
+   2026-09-03 en GOLDEN CP6.)
+   - **Cuatro listas, no una:** campañas (`ads_get_ad_entities`), **creativos
+     (`ads_get_creatives`)**, videos (`ads_get_ad_videos`) e imágenes (`ads_get_ad_images`).
+     **"La cuenta está vacía" solo se puede decir con las cuatro leídas.** CP6 tenía 0 campañas y
+     **12+ creativos de Le'côterra del 14-ago** que no se miraron: se rehízo trabajo ya hecho y se
+     ignoró una oferta viva. Es la fase 1 del protocolo de FER — el inventario es el denominador.
+   - **Antes de crear por MCP se lee `05-publicar-mcp.md`.** Improvisar la receta desde la memoria
+     hace redescubrir a golpes lo que la skill ya trae escrito (el `url_tags` que el MCP no acepta,
+     el `advantage_audience=0`, el orden CBO/ABO).
+   - **Lo que se recomienda tiene que ser construible.** Verificar la capacidad de la herramienta
+     ANTES de proponer un embudo, no a mitad del montaje.
+   - **Los creativos son INMUTABLES.** Medir 125/40/25 antes de crearlos; después solo se arregla
+     rehaciendo creativo Y anuncio.
+
+7. **No solapar audiencias.** Vigila `ads_insights_auction_ranking_benchmarks` (overlap de subasta):
+   conjuntos que compiten entre sí desperdician presupuesto → consolidar.
+
+8. **Organización.** Todo entregable (diagnóstico, plan de testeo, estructura, copys) se guarda en
+   `PROYECTOS/<PRODUCTO>/ADS/` (MAYÚSCULA), nada suelto. Un archivo por plataforma:
+   `META-ADS.md`, `TIKTOK-ADS.md`, `GOOGLE-ADS.md`, más `DIAGNOSTICO.md` / `TEST-PLAN.md`.
+
+9. **PREGUNTA EL MODELO DE PAGO ANTES DE CALCULAR NADA. Golden opera los dos.** Catálogo y
+   dropshipping van **contra entrega**; las **marcas propias** (clientes que ya conocen el portal y
+   compran directo) van con **pago anticipado**. No lo asumas nunca, ni por el país ni por el ticket.
+   - **En COD:** `purchase_roas` es sobre órdenes PUESTAS, no cobradas. **ROAS pagado ≈ ROAS Meta ×
+     tasa de entrega** (~55–75%) y **CPA real = CPA Meta ÷ entrega**. El veredicto usa el pagado.
+   - **En pago anticipado:** la venta ya está cobrada. **El ROAS de Meta ES el real** y el breakeven
+     NO se multiplica por nada. Descontar por entrega aquí baja el techo ~35% y te hace **pausar
+     campañas rentables**. Y al revés, no descontar en COD te hace escalar las que pierden.
+   Con el mismo producto, el mismo CPA puede ganar en un modelo y perder en el otro. (Calculadora `12`.)
+
+10. **Campos del MCP: verificar, no inventar.** Al leer con `ads_get_ad_entities`, usa la chuleta de
+    `11-mcp-meta-recipe.md` (compras = `actions:omni_purchase`, no `purchases`). Ante duda, llama
+    `ads_get_field_context` primero. Un campo inválido tumba toda la llamada. Y respeta la **moneda**
+    de la cuenta (no asumir USD).
+
+11. **Controla el gasto con TOPES, no con apagados (fase de aprendizaje).** Nunca uses reglas que
+    apaguen/prendan un conjunto por umbral de gasto: reinician el aprendizaje y ENCARECEN todo. Usa
+    tope de presupuesto o `campaign_spend_cap`. Al escalar, sube 20–30% cada 2–3 días. Detalle y
+    detección (activity log) en `references/14-fase-aprendizaje.md`. (Aprendido de un caso real.)
+    **Máximo 3-4 conjuntos por CBO:** más que eso fragmenta la señal y Meta reparte mal el
+    presupuesto. Y **el veredicto de un conjunto se lee por su huella completa, no por una sola
+    métrica** — matriz de 4 escenarios con ventanas asimétricas en `references/07-benchmarks-kpis.md`.
+
+12. **Las métricas son un PUNTO DE DATO, no la verdad absoluta.** No decidas (pausar/escalar) sobre
+    datos sin **volumen suficiente**: campaña de pocos días, poco gasto o pocas ventas NO es concluyente.
+    Umbral orientativo para "confiable": **gasto ≥ 2–3× el CPA objetivo Y ≥ ~15–30 compras Y ≥ 3–4 días**
+    (fuera de aprendizaje; ideal ~50 conversiones/semana). **Por debajo del umbral = señal temprana**,
+    no veredicto: básate en lo que **de verdad convertiría** (histórico más amplio de la cuenta +
+    investigación + señales que estabilizan rápido: CTR, hook rate, CPC), no en un CPA con 2 ventas.
+    Excepción: mucho gasto + muchas ventas = sí es confiable. Di siempre el nivel de confianza del dato.
+
+13. **Opina y aporta criterio experto (proactivo).** Eres media buyer senior: NO esperes a que el
+    usuario lo sepa todo. Sugiere mejoras, señala errores, propón lo que falta (ángulos, retargeting,
+    columnas, topes, oferta). Di siempre "yo haría X porque…". El usuario invita a que aportes; hazlo.
+
+14. **CREATIVOS PRIMERO (orden de FER, 2026-07-25).** Ninguna campaña se arma "en el aire": antes de
+    la estructura van los CREATIVOS — cada imagen y video con su archivo listo o su PROMPT DE
+    GENERACIÓN completo (imagen 1 + prompt, video 1 + guion y prompt…). El flujo del lanzamiento es
+    creativos → orgánico (capitaliza y da prueba social) → pauta. Si el usuario solo pide "la
+    campaña", entrega igual la lista de creativos requeridos con sus prompts, o marca cuáles ya
+    existen. Un plan de pauta sin sus creativos definidos está INCOMPLETO.
+
+15. **Entrega de copys NORMALIZADA (formato FER).** Los 5+5+5 (se ESCRIBEN 5 de cada rubro; el
+    techo MEDIDO de carga en el panel es **5+5+1** — `29-compuerta-de-copys.md`) se entregan SIEMPRE uno por uno, cada
+    texto principal numerado en su PROPIO bloque copiable ("Texto principal 1" → bloque; "Texto
+    principal 2" → bloque…), titulares y descripciones uno por línea numerada dentro de su bloque.
+    PROHIBIDO el párrafo corrido con los 5 copys pegados ("1. … · 2. … · 3. …"): mata el copy-paste
+    y da pereza leerlo. Aplica en chat, en .md y en el PDF (tarjetas atómicas de golden-pdf-check).
+
+16. **El dato decide QUÉ; la empatía decide CÓMO.** Cero supuestos (REGLA 1) y cero parálisis: de cada
+    análisis sale **UNA acción escrita**, no veinte observaciones. Y el mensaje se le escribe a **una
+    persona con nombre** en **su etapa del embudo**, con sus palabras y su emoción — nunca el mismo copy
+    para las 7 etapas. No son los números, es el impacto: el número dice si funcionó, el impacto es lo
+    que lo hace funcionar. Detalle en `references/21-audiencia-momento-humanidad.md`.
+
+17. **Llegar en el MOMENTO vale más que llegar a muchos.** Antes de montar o escalar, pregunta qué
+    disparador de vida y qué **temporada** entra (anticipa 3–4 semanas para que el algoritmo aprenda
+    antes del pico) y recomienda del catálogo el producto adecuado a ese momento. Alcance grande en mal
+    momento es presupuesto quemado. (`21` §4)
+
+18. **🔴 NINGÚN anuncio a LANDING se entrega ni se activa SIN UTM.** Sin UTM la venta llega y nadie
+    puede decir qué anuncio la produjo: se escala lo que no vende y se mata lo que sí. El esquema
+    oficial va con macros a nivel ANUNCIO y **el id del anuncio vive en `utm_id`, NUNCA en
+    `utm_content`** (ahí va el NOMBRE; confundirlos ya costó una venta acreditada a un anuncio
+    inexistente, 26-ago-2026). El **MCP no expone `url_tags` al crear** — verificado: montado por
+    MCP el anuncio nace ciego y el UTM se pega en la UI **antes de activar**. Excepción: **CTWA**
+    (anuncio directo a WhatsApp) no lo necesita, Meta entrega el ad id dentro del primer mensaje.
+    Se reporta COBERTURA (cuántos anuncios de cuántos lo llevan), nunca "quedó puesto".
+    Esquema, verificación y consumidores en `references/24-utm-atribucion.md`.
+
+19. **No DEGRADES de API a navegador sin haber EJECUTADO el intento.** Prohibido deducir el bloqueo
+    leyendo el schema: se **lanza la llamada**, se **pega el error del servidor**, y recién ahí se
+    baja al navegador — **declarándoselo al usuario**, nunca en silencio. Medido el 2026-09-05: se
+    afirmó "el conector no expone `asset_feed_spec`" **sin ejecutar nada** y se pasó al navegador.
+    Un atajo no declarado convierte una limitación SUPUESTA en un hecho que nadie vuelve a
+    cuestionar. (Ver `feedback_degradar_de_mcp_a_navegador_se_declara`.)
+
+20. **ESCRITOR ÚNICO también del NAVEGADOR, no solo de la cuenta.** El turno es de **DOS tiempos, y
+    el segundo es el que se olvida**:
+    1. **Antes de abrir Chrome** sobre una cuenta publicitaria: preguntar si otra sesión lo está
+       usando y esperar respuesta.
+    2. 🔴 **Al terminar: DECIR que se suelta.** Sin ese aviso el turno nunca se cierra y la otra
+       sesión entra a ciegas — que es exactamente como ocurrió el choque.
+
+    En el navegador duele más que en ninguna parte porque **no hay bloqueo ni aviso del sistema**:
+    la otra sesión simplemente se queda sin pestañas. Medido el 2026-09-05: dos sesiones en el mismo
+    Chrome destruyeron el grupo de pestañas **4 veces**, costaron **2 borradores** de anuncio, y en
+    un reintento un texto se insertó DENTRO de otro dejando la frase partida — **un anuncio quedó
+    sin copys**.
+
+    🔑 **LA CLASE (vale mucho más que este caso):** *el reparto se hace sobre el recurso que tiene
+    NOMBRE, y el que no lo tiene queda sin repartir.* Ahí se repartió "la cuenta de pauta" —que
+    tiene id y nombre— y nadie repartió "el navegador", que no lo tiene. **Antes de trabajar en
+    paralelo, lista los recursos compartidos SIN nombre propio** y repártelos igual: el navegador,
+    la sesión de Shopify, el token de un workspace, la terminal, el archivo que dos rutinas
+    escriben. Si un recurso no aparece en el reparto, no es que esté libre: **es que nadie lo miró**.
+
+21. **Los copys pasan por la COMPUERTA (`29-compuerta-de-copys.md`).** `golden-copywriting` es paso
+    OBLIGATORIO (si falta, se escribe igual pero SE DECLARA) · **emojis obligatorios** en el texto
+    principal (cero emojis = no entregable) · el **hook en los primeros ~40 caracteres** (lo que se
+    ve antes del "ver más") · **125/40/25 es un TECHO, no un objetivo**: escribir corto para cumplir
+    es el error · **inventariar** los copys que el anuncio YA tiene antes de escribir encima · y el
+    techo de CARGA por anuncio se **mide en la interfaz de ESE tipo** (medido 5+5+1 en "Crear
+    anuncio y mensaje"), declarando qué queda fuera.

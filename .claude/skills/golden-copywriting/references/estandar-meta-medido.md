@@ -1,0 +1,472 @@
+# Estándar de Meta MEDIDO · largos, formato y molde COD
+
+<!-- Medido el 2026-08-10 en el chat Le'côterra. Tres fuentes externas + histórico propio. -->
+
+Esto no son buenas prácticas de blog: son tres fuentes contrastadas y medidas. Cuando escribas
+copy de Meta, este archivo manda sobre cualquier intuición de largo.
+
+Índice: §1 Límites oficiales (125/40/25) · §2 Rendimiento bimodal y cómo se aplica al 5+5+5 ·
+§3 La ventana de 125 y dónde va la oferta · §4 Molde COD Colombia + títulos medidos · §5 Tildes ·
+Cómo volver a levantar la evidencia (con la trampa de effective_status) · §6 El copy no es la
+variable dominante · §7 Qué del mercado es medible y qué no.
+
+## 1 · Límites oficiales (fuente autoritativa)
+
+Centro de ayuda de Meta, artículo **223409425500940** — *"Prácticas recomendadas de creatividad
+para el texto de los anuncios"*:
+
+| Campo | Recomendado por Meta |
+|---|---|
+| Texto principal | **125 caracteres** |
+| Título / headline | **40 caracteres** |
+| Descripción | **25 caracteres** |
+
+Textual: *"el texto principal debe ocupar 1 a 3 líneas como máximo"*.
+
+**La descripción es 25, no 30.** Medio internet repite 30 y se equivoca. Meta **trunca en
+silencio**, no rechaza: el copy entra, se ve cortado y nadie se entera.
+
+Meta también recomienda **de forma explícita cargar varias opciones por campo** para que el
+sistema optimice la entrega. El estándar 5+5+5 de esta skill está respaldado por la fuente.
+
+**Cita textual del artículo canónico, recuperada el 2026-09-01** — hasta ahora el 5+5+5 se apoyaba
+en el artículo de generación por IA; ahora está en el de buenas prácticas de texto, y descrito como
+opciones que **carga el anunciante**, no generadas por Meta: *"input multiple text options for the
+primary text, headline and description fields when creating single image or video ads. This allows
+our ad system to optimize for delivery and performance using variations of the text options
+provided"*. Aplica a **imagen única o video único**.
+
+> **Consecuencia operativa, medida el 25-ago y confirmada el 01-sep:** los textos van como
+> **opciones múltiples DENTRO de un anuncio**, no como anuncios hermanos. Cargados como anuncios
+> hermanos, el algoritmo le da casi todo el presupuesto a uno en las primeras horas y **los demás no
+> llegan a tener muestra** — dos piezas medidas recibieron 436 y 9 pesos. Eso no es un test, es un
+> copy con testigos.
+
+**Capacidad de Meta que esta skill NO cubre (hueco declarado 2026-09-01):** el mismo artículo nombra
+**`placement asset customization`** — copy distinto por ubicación (más corto en Stories, más de marca
+en Instagram). La skill no lo menciona en ninguna parte y podría cambiar cómo se reparten los 5+5+5.
+
+**La descripción de 25 NO es donde va el argumento de venta, y lo dice Meta.** Artículo
+**497610041230617**: *"your description should contain only nonessential information"*. No pelees
+por meter la oferta en 25 caracteres — ese campo es para información prescindible. (Medido
+2026-08-25.)
+
+**El generador de variantes de Meta SOPORTA ESPAÑOL.** Artículo **180641596861873**: *"text
+variations with and without personas are currently available when primary text inputs are in
+english, portuguese and spanish"*, y genera **hasta 5 variantes** de texto principal y título. Es
+decir, el mecanismo que el 5+5+5 necesita está disponible en el idioma en que Golden pauta; deja de
+ser una limitación teórica. (Medido 2026-08-25.)
+
+## 2 · El rendimiento es BIMODAL (lo que contradice al consejo estándar)
+
+AdSpyder, sobre **43,9 millones de anuncios de Meta** (muestra aleatoria de 8.815):
+
+| Largo del texto principal | Supervivencia a 30 días |
+|---|---|
+| **menos de 50 caracteres** | **15,5%** — el mejor |
+| 250 a 500 | 10,8% — segundo pico |
+| **50 a 125** | **7,7% — el peor** |
+
+**Meta premia los extremos y castiga el término medio.** La mediana histórica de los 43M es 118
+caracteres — justo dentro del valle. La mayoría del mercado escribe en la zona que peor funciona.
+
+**Límite del dato, declararlo siempre:** mide **cuánto tiempo vive un anuncio**, no cuánto vende.
+Un anuncio que sigue al aire suele ser uno que el anunciante no apagó, lo cual correlaciona con
+que funciona — pero es un indicio, no una prueba de conversión.
+
+### Cómo se aplica al 5+5+5
+
+> **Actualizado 2026-08-21 · el polo corto YA se ejecutó, y el mecanismo tiene fuente oficial.**
+> Dos corridas se cerraron diciendo "los cortos nunca salieron al aire". Ya salieron: BLUE CP2,
+> campaña OPEN 7, anuncio `OPEN 7 - V5 Bergamot`, cuerpo de **33 caracteres** (`BERGAMOT 36 es
+> cítrica y fresca 🧊`). **No es una pieza suelta: `OPEN 7` (14-ago) y `OPEN 8` (19-ago) son una
+> tanda entera de copy corto en 8 cuentas**, 32-52 caracteres, 8 creativos leídos.
+>
+> **Y en agregado el corto PIERDE.** Misma marca, mismos 30 días, top-5 por gasto de cada cuenta:
+> **corto 2.030.367 COP / 37 compras / CPA 54.875** contra **largo 8.635.362 COP / 193 compras /
+> CPA 44.743** — el corto **23% más caro**. En las cuentas en dólares pasa lo contrario (9 vs 13
+> USD) pero sobre 8 compras y otro mercado: no se suman, no hay ganador.
+>
+> **El dato que manda no es cuál gana: es que el mismo copy corto va de CPA 17.037 (INTER CP2) a
+> 123.710 (GOLDEN CP1) — siete veces entre cuentas.** Esa dispersión es más grande que el 23% que
+> se quiere medir. **Mientras sea así, el experimento corto-vs-largo no puede dar veredicto**, y
+> el pico 1 del modelo bimodal sigue SIN probarse — ahora por varianza, ya no por falta de datos.
+> Coherente con §6: el texto no es la variable dominante.
+>
+> El mecanismo de opciones múltiples **existe y Meta lo documenta**: *"Add text options: input
+> multiple text options for the primary text, headline and description fields **when creating
+> single image or video ads**"* (artículo 223409425500940). Aplica **solo a imagen o video único**.
+> Lo que sigue sin poder verificarse por API es si un anuncio del arsenal lo tiene montado: la
+> lectura devuelve un solo `body` por creativo y no expone `asset_feed_spec`. Van tres corridas.
+> Para comprobarlo hay que abrir el anuncio a mano en el Administrador.
+
+Los 5 textos principales **no se escriben todos del mismo largo**. Reparto por defecto:
+
+| | Largo | Nivel de consciencia (Schwartz) |
+|---|---|---|
+| Texto 1 | menos de 50 | Más consciente: ya sabe lo que quiere |
+| Texto 2 | menos de 50 | Consciente del producto: compra por el beneficio |
+| Texto 3 | 250 a 500 | Consciente del problema: no sabe que hay solución |
+| Texto 4 | 250 a 500 | Consciente de la solución: duda del mecanismo |
+| Texto 5 | 250 a 500 | Necesita prueba antes de comprar |
+
+Dos cortos y tres largos cubren los dos picos y **esquivan el valle 50-125**. Además, repartir
+niveles de consciencia dentro del mismo conjunto le da al algoritmo con qué emparejar a cada
+persona, en vez de cinco versiones del mismo mensaje compitiendo entre sí.
+
+> ### Cómo se MONTA, que es donde se ha estado rompiendo
+>
+> Los 5 textos van como **opciones múltiples del campo Texto principal DENTRO DE UN MISMO
+> ANUNCIO** — que es exactamente lo que Meta recomienda en el artículo 223409425500940 para que
+> su sistema optimice la entrega. **No** como cinco anuncios distintos con un texto cada uno.
+>
+> **Esto no es un detalle de forma: es la diferencia entre probar el estándar y no probarlo.**
+> Corrida del 2026-08-10: los 165 copys de Le'côterra se cargaron con **un solo cuerpo de 332
+> caracteres por creativo**, y no salió al aire ni un copy de menos de 50 en ninguna de las 14
+> cuentas con gasto. Se comparó largo contra largo. El reparto 2+3 lleva meses sin ejecutarse.
+>
+> **Antes de dar por buena o por mala esta tabla, verifica que los cortos estén corriendo.**
+>
+> **Actualización 2026-08-25 · el banco de pruebas se apagó, y el motivo enseña algo.** Los dos
+> brazos que medían este reparto en Le'côterra CP2 (`V6 · Bergamot · 15 copys` contra
+> `Video 6 · Bergamot · mejor CPA`) **ya no corren**: la cuenta migró a catálogo dinámico. El
+> estándar 2+3 no se validó ni se refutó — se quedó sin experimento.
+>
+> **Y la tanda corta `OPEN 7`, que sí sigue viva (BLUE CP1), muestra por qué esto nunca converge.**
+> Los tres copys cortos se cargaron **como anuncios hermanos**, y el conjunto repartió así:
+> Bergamot **166.697 COP**, Duo **436 COP**, Vanilla **9 COP**. Dos de tres con entrega cero.
+> **El algoritmo elige uno en las primeras horas y las demás nunca alcanzan muestra: eso no es un
+> test de tres copys, es un copy con dos testigos.**
+>
+> **Consecuencia dura para el 5+5+5, ya no teórica:** cargar las variantes como anuncios separados
+> **garantiza que no se midan**. Van como opciones múltiples DENTRO de un mismo anuncio — que es
+> además lo que Meta documenta y lo que ahora sabemos que soporta español (§1).
+
+## 3 · Los primeros 125 caracteres son el anuncio entero
+
+Ahí cae el **"Ver más"** y la mayoría no lo abre.
+
+**Regla dura: en todo texto largo, el argumento de venta —precio, garantía de duración, envío
+gratis, prueba social— tiene que caber dentro de los primeros 125 caracteres.**
+
+> ### La salida que el mercado usa, y funciona mejor (subida a la base el 2026-09-01)
+>
+> La oferta **logística** (envío gratis, paga al recibir) tiene una casa mejor que los 125:
+> **el título o la descripción del enlace, que NUNCA se truncan.**
+>
+> Medido con script sobre los cuerpos completos del mercado CO: **0 de 5 meten la oferta logística
+> en los primeros 125 caracteres** (la más temprana cae en el carácter 172, la más tardía en el 509)
+> **pero 4 de 5 la ponen en el título o la descripción** — `PAGA AL RECIBIR`, `PAGA EN CASA`,
+> `Envío Gratis🎁`, `Cuadros Religiosos 90x60 | Envío Gratis + Contra Entrega`. El quinto usa el
+> título para prueba social (`⭐ +2.354 Pijamas Vendidas`).
+>
+> Tres corridas en la misma dirección: 2 de 4 el 25-ago, **4 de 5 el 01-sep**.
+>
+> **Cómo se aplica:** los 125 son para el **gancho y el argumento** (dolor, mecanismo, credibilidad).
+> La **oferta logística va al título**. No hay que pelear por meterlas todas en la misma ventana —
+> forzarlo es lo que produce el copy amontonado que la auditoría caza.
+
+Esta es **la clase de fallo más común al auditar copys largos**: el gancho se come la ventana
+visible y el argumento queda escondido detrás del "Ver más". En la corrida de Le'côterra,
+**13 de 33 textos largos fallaban esto** en el primer borrador. Revísalo siempre, uno por uno.
+
+**Contraejemplo medido, tenlo presente antes de aplicarla como ley:** el anuncio que más vende
+de todo el arsenal Golden —Tag Recede VIDEO 8, 43 compras a 24.531 COP de CPA en 30 días
+(cuenta BLUE CP1, medido 2026-08-10)— tiene un cuerpo de **185 caracteres** y **no menciona
+precio, envío gratis ni pago contra entrega en ningún punto**. Es un vertical con
+restricciones de claims (uñas/hongos) y no hay un A/B contra él, así que no tumba la regla.
+Lo que sí obliga: **cuando el producto no puede prometer, la regla no aplica; no le metas una
+oferta al copy solo para cumplirla.**
+
+**Actualizado 2026-08-16, ya no es un caso aislado.** Se leyeron los 5 anuncios de mayor
+volumen de tres cuentas distintas —Le'côterra CP2, Tag Recede BLUE CP1 y otra empresa del grupo CP1 (por
+primera vez cruzado)— y **ninguno de los cinco mete el argumento de venta en los primeros
+125 caracteres, y los cinco venden**: V6·15 copys (332 car., 3 compras, CPA 15.030), V6
+Bergamot (221 car., 14 compras, CPA 40.765), Tag Recede VIDEO 8 (185 car., 31 compras, CPA
+24.381), otra empresa del grupo Anuncio 3 (361 car., 35 compras, CPA 24.496) y otra empresa del grupo Anuncio 3 Drive (485
+car., 9 compras, CPA 16.569). **Le'côterra y otra empresa del grupo no tienen restricción de claims de salud**
+— el escudo que protegía la excepción de Tag Recede ya no aplica a los otros dos. La regla
+sigue siendo el consejo por defecto (y Meta la respalda en el artículo oficial), pero **deja
+de tratarse como ley dura sin excepción: se sostiene en 0 de 5 de los mayores vendedores
+medidos.** Sigue faltando el A/B directo — no hay un anuncio idéntico que SÍ cumpla la regla
+corriendo en paralelo para comparar contra estos cinco. Detalle completo en la entrada
+2026-08-16 de `tendencias-vivas.md`.
+
+**Actualizado 2026-08-21, tercera corrida: 0 de 8, y ya hay explicación.** Ocho anuncios con
+cuerpo legible y ventas, en cuatro cuentas y cuatro verticales, **ninguno** mete el argumento
+en los primeros 125: otra empresa del grupo Anuncio 3 Drive (485 car., 16 compras, CPA 14.794), otra empresa del grupo Anuncio 3
+(361, 41, 22.946), Tag Recede VIDEO 8 (185, 21, 23.779), otra empresa del grupo Anuncio 19 Drive (485, 13,
+33.622), Le'côterra V6 vigente (221, 8, 37.344), V6 15 copys (332, 13, 38.165), V6 CP1 (221,
+14, 40.765) y OPEN 7 V5 (33, 2, 42.174).
+
+**La explicación no es que la regla esté mal: es que la oferta se mudó de sitio.** En los tres
+cuerpos de mercado leídos el 2026-08-21 —Alquimia Store, Caphero leather y Laboratorio special
+xs— los tres ponen la promesa logística en el **titular o la descripción del enlace**, no en el
+cuerpo. Y el titular **no se corta nunca**; los primeros 125 del cuerpo sí desaparecen tras el
+"Ver más" si el lector no lo abre.
+
+**Cómo aplicarla desde ahora:**
+1. **La oferta va en el TÍTULO** (40 caracteres, siempre visible). Ese es el sitio seguro.
+2. Si la oferta ya está en el título, **el cuerpo queda libre para el argumento** y la regla de
+   los 125 deja de ser obligatoria — pasa a ser preferencia.
+3. Si la oferta **no** está en el título, entonces sí: métela en los primeros 125 del cuerpo.
+4. Producto que no puede prometer (claims restringidos): no le inventes una oferta para cumplir.
+
+**Contraste medido, con su límite:** en otra empresa del grupo CP1, mismo producto y misma cuenta, título-oferta
+(`🚛Envío gratis y Pago Contraentrega📦`, 41 compras, CPA 22.946) contra título-beneficio (`Usa
+tu celular sin sacarlo del bolso`, 16 compras, CPA 14.794). Gana el beneficio, **pero el CTA
+también cambia entre los dos**, así que no aísla la variable. No lo cites como prueba de que el
+título-beneficio gana.
+
+## 4 · El molde COD que está corriendo en Colombia
+
+> **Actualizado 2026-08-21 · dos cambios medidos en el molde.**
+> **(a) La oferta emigró al titular.** En los 3 cuerpos de mercado leídos hoy, los 3 sacaron la
+> línea 🚚 y la línea 💵 del cuerpo y las pusieron en el titular o la descripción del enlace.
+> **(b) Apareció una tercera variante, la del MECANISMO** (Laboratorio special xs): pregunta de
+> apertura *"¿Cómo funciona exactamente X? 🤔"* → ingredientes o piezas → cada una traducida a
+> beneficio con emoji → remate que desactiva la incredulidad (*"No es magia — es que…"*) →
+> **precio + envío + contra entrega consolidados en UNA línea** → cierre hacia conversación
+> (*"¿Tienes preguntas? Escríbenos antes de comprar 👇"*), destino WhatsApp. Sirve para producto
+> que necesita explicarse antes de venderse.
+> **(c) Registro de marca, no de catálogo** (Caphero leather): tres párrafos, cero emoji, cero
+> bullets, cero precio, toda la oferta en el titular. Es el molde del perfil "marca propia".
+
+De cuerpos completos de anuncios activos leídos en la Biblioteca de Anuncios (CreaClub, Seta,
+Cedanni). Los tres, la misma forma exacta:
+
+```
+😩 Hook de dolor, una sola línea
+(línea en blanco)
+Qué es el producto y qué hace
+(línea en blanco)
+✅ beneficio
+✅ beneficio
+✅ beneficio
+(línea en blanco)
+🚚 Envío GRATIS
+(línea en blanco)
+💵 Paga al recibir
+(línea en blanco)
+👉 CTA
+```
+
+**Una idea por línea, línea en blanco entre bloques, emoji al inicio de cada línea.** Muy
+escaneable en móvil, que es donde compra el 74% del tráfico LatAm.
+
+### Dos mecanismos de apertura vistos en el mercado el 2026-09-01
+
+**1 · La pregunta que hace ELEGIR, no asentir.** Cuadros Colombia abre con *"¿Te inspira más La
+Última Cena, una imagen de Jesús, o la protección de la Virgen de Guadalupe?"*. La pregunta de dolor
+que enseña la skill se responde sí o no; esta **obliga a escoger entre opciones, y escoger ya es un
+micro-compromiso.** Úsala cuando el producto tenga variantes, referencias o sabores.
+
+**2 · Hashtags al cierre del cuerpo.** Danifit remata con siete (`#pijamas #emprendimientocolombia`
+…). **Primera aparición en cinco corridas.** Un caso no es un patrón: anotado, no recomendado.
+
+**Y la prueba social numérica se mudó de sitio.** De los 5 cuerpos leídos, **ninguno** la mete en el
+cuerpo: Danifit la pone en el **título** (`⭐ +2.354 Pijamas Vendidas`) y Total Life en la
+**descripción** (`Calificación ⭐⭐⭐⭐⭐(5/5)`). Coherente con la regla de arriba: **lo que no puede
+truncarse va al título.**
+
+### Títulos: 57 anuncios activos medidos con script
+
+Medición del **2026-08-10 (tarde)**, 3 términos de búsqueda, títulos únicos por página, 45
+páginas distintas. Script reproducible con autotest en la bitácora de la tarea programada.
+
+| Métrica | Valor |
+|---|---|
+| Longitud media | **30 caracteres** |
+| Mediana | 31 |
+| Cabe en 40 | **82%** |
+| Cabe en 25 | 40% |
+| Lleva emoji | **51%** (mitad al final, un tercio al inicio) |
+| Va en MAYÚSCULAS | 26% |
+| **Usa el título para la OFERTA** (envío gratis / paga al recibir) | **32%** |
+| Usa el título para el PRECIO | 9% |
+| Sin título, o con `{{product.name}}` sin resolver | **19% del total traído** |
+
+**Cuidado al comparar con mediciones viejas.** Una primera medición a mano (35 títulos) dio
+33 caracteres, 60% emoji y 51% de oferta. No dejó escrito su método de deduplicación ni su
+criterio de "oferta", así que **la diferencia es de método, no prueba que el mercado se moviera**.
+Sumando los títulos de precio, la cifra comparable de oferta sube a 41%. **Manda la medición
+con script, que es la que se puede repetir.**
+
+El accionable no cambia: **un tercio largo del mercado colombiano usa el título para la oferta
+y no para el beneficio.** Reparto recomendado por concepto: **3 títulos de beneficio + 2 de
+oferta.** Y el 19% que desperdicia el titular es el hueco más barato de aprovechar.
+
+### Lo que aguanta CINCO corridas y lo que no (consolidado 2026-09-01)
+
+Cinco mediciones con el mismo script y los mismos 3 términos (10-ago, 16-ago, 21-ago, 25-ago,
+01-sep). Puesto junto, se separa lo estable de lo que solo parecía estable:
+
+| Métrica | Rango en 5 corridas | Veredicto |
+|---|---|---|
+| **Cabe en 40** | 79% – 93% | **Lo único usable**, pero como enunciado, no como cifra |
+| Longitud media | 24,7 – 32,5 | **NO usar.** La arrastran títulos excéntricos de 300+ car. |
+| Mediana | 21 – 31 | No usar sola |
+| Emoji | 26% – 65% | **NO medible** con 150 anuncios por recencia |
+| MAYÚSCULAS | 13% – 37% | **NO medible** |
+| Título = OFERTA | 22% – 32% | **NO medible.** Su racha descendente se rompió el 01-sep |
+
+> **La única regla de títulos que aguanta cinco corridas: cuatro de cada cinco títulos del mercado
+> colombiano, o más, caben en 40 caracteres.** Escrito como porcentaje exacto es falsa precisión;
+> la corrida del 25-ago afirmó "79-87% estable" y ocho días después salió 93%.
+
+**Y un hallazgo estructural, ese sí limpio (01-sep):** de los **66 títulos con emoji**, **45 lo
+llevan al principio, 21 al final y CERO en el medio.** Tres formas distintas de deduplicar dan lo
+mismo. **El emoji del título va al principio o al final, nunca intercalado.** No es estilo: son
+66 de 66.
+
+### Emojis
+
+Los estudios que circulan (+20% CTR, +30-56%, +241%) salen de blogs de agencias que se citan
+entre sí, sin metodología publicada. **Tratar como señal, jamás como dato.** Lo que sí es
+observable y medido: **el 60% de los anuncios activos en Colombia llevan emoji en el título**, y
+todos los cuerpos COD leídos abren cada línea con uno. El mercado ya decidió.
+
+## 5 · Tildes
+
+Los anuncios que están corriendo las llevan. Una tilde faltante se lee como descuido y el copy
+pierde autoridad. **Escribir siempre con ortografía correcta** — recordando que la regla de la
+casa prohíbe los signos de apertura `¿` `¡`, que es otra cosa.
+
+## Cómo volver a levantar esta evidencia
+
+- **Límites oficiales:** `ads_get_help_article` del MCP de Meta.
+- **Títulos del mercado:** `ads_library_search` con `countries: ["CO"]`, `ad_active_status: ACTIVE`
+  y un término de oferta ("envío gratis", "paga al recibir"). Devuelve el **título**, nunca el cuerpo.
+- **Cuerpo del anuncio:** hay que **scrapear el `ad_snapshot_url` con firecrawl** (`waitFor: 4000`,
+  `onlyMainContent: true`). El cuerpo aparece después de `**Sponsored**`.
+- **Trampa a evitar:** la API devuelve por **recencia**, así que casi todo lo que trae lleva horas
+  al aire. Sirve para leer el molde del mercado, **no para probar qué convierte**. Si necesitas
+  ganadores, cruza contra las campañas propias (ver `tendencias-vivas.md`).
+- **Rendimiento propio:** `ads_get_ad_entities` a nivel `ad`. El campo del texto NO viene ahí:
+  trae `creative_id` y después pide el `body` y el `title` con `ads_get_creatives`.
+
+### La trampa que más gasto esconde (verificada el 2026-08-10)
+
+Al pedir los anuncios hay que filtrar por `effective_status`, pero **si filtras solo por
+ACTIVE / PAUSED / ADSET_PAUSED / CAMPAIGN_PAUSED te pierdes la mayoría del gasto.** Medido:
+GOLDEN CP1 devolvió **cero anuncios** teniendo 3.290.484 COP gastados en 30 días, y Le'côterra
+CP 2 mostró 502.980 de 3.612.625 COP reales. **Casi todo el gasto del mes vive en anuncios
+ARCHIVED, DELETED o WITH_ISSUES**, porque las campañas se archivan al rotarlas.
+
+Pide siempre la lista larga: `ACTIVE, PAUSED, ADSET_PAUSED, CAMPAIGN_PAUSED, ARCHIVED, DELETED,
+DISAPPROVED, PENDING_REVIEW, PREAPPROVED, PENDING_BILLING_INFO, IN_PROCESS, WITH_ISSUES`.
+
+**Y después cuadra**: suma el gasto de los anuncios y compáralo contra el total de la cuenta a
+nivel `ad_account`. Si no cuadra, te falta cobertura — ese cuadre es lo único que delata el
+hueco, porque una lista corta no da error, devuelve menos y parece correcta.
+
+### La OTRA cara de la trampa: a veces el hueco no es tuyo (verificado el 2026-08-25)
+
+Cuadrar el gasto no solo sirve para detectar un filtro mal puesto. **A veces la API simplemente no
+devuelve el gasto, hagas lo que hagas.** Medido el 2026-08-25:
+
+| Cuenta | Gasto de la CUENTA | Suma de los anuncios legibles | Cobertura |
+|---|---|---|---|
+| GOLDEN CP6 | 3.171.690 COP | **lista vacía** | **0%** |
+| BLUE CP5 DOLAR | 777,20 USD | **lista vacía** | **0%** |
+| BLUE CP1 | 3.545.529 COP | 167.142 COP | 4,7% |
+| GOLDEN CP1 | 4.198.431 COP | 967.222 COP | 23% |
+| Le'côterra CP2 | 2.670.379 COP | 1.224.515 COP | 46% |
+
+GOLDEN CP6 devuelve vacío **con filtro, sin filtro y a nivel `campaign` también**. No es el filtro.
+
+**Por qué esto arruina una comparación de copys, con número:** en BLUE CP1 el anuncio que la API sí
+deja ver (`OPEN 7 - V5 Bergamot`) reporta **CPA 27.783 / ROAS 5,38**. La campaña que lo contiene
+reporta **CPA 60.444 / ROAS 2,31**. El anuncio visible se ve **2,2x mejor** que su propia campaña.
+Rankear copys sobre lo que la API entrega, sin cuadrar, es cherry-picking con pasos extra.
+
+> **Regla dura: antes de comparar CPA entre copys, cuadra la cobertura. Si el gasto de los anuncios
+> leídos no se acerca al de la cuenta, no reportes el ranking de copys — reporta la cobertura.**
+
+> ### 🔴 CORRECCIÓN 2026-09-01 · el hueco era TRANSITORIO, no estructural
+>
+> Ocho días después, mismas cuentas y mismo método: **GOLDEN CP6 pasó de 0% a 98,8%** de cobertura,
+> **BLUE CP1 de 4,7% a 99,8%**, GOLDEN CP1 de 23% a 93,9%, Le'côterra CP2 de 46% a 81,5% — y eso
+> pidiendo solo los 20 primeros anuncios por gasto de cada una.
+>
+> **La medición del 25-ago fue real; la conclusión de que era un hueco estructural de la API NO se
+> sostiene.** No hay fuente que explique el cambio y no se inventa una.
+>
+> **La regla de cuadrar la cobertura NO se deroga: se refuerza.** Precisamente porque la cobertura
+> puede caer a 0% y volver sin avisar, el cuadre es un chequeo **de cada corrida**, no una lección
+> aprendida una vez. La tabla de arriba se conserva como el caso peor documentado.
+
+### Cuántas cuentas hay que mirar
+
+`ads_get_ad_accounts` con `limit: 100`. El **2026-09-01 devolvió 76 cuentas** (sin `next_cursor`) —
+**eran 74 el 16, el 21 y el 25 de agosto: el censo crece, vuelve a contarse cada corrida y se
+guardan los ids para poder hacer el diff.** Descontando 14 no consultables, 2 con Ads MCP
+deshabilitado y `GOLDEN CP BACK UP`, quedan **59 barribles — el censo completo de lo legible**, y de
+esas **15 tuvieron gasto en 30 días**. Ese embudo 76 → 59 → 15 es el denominador del informe.
+No te quedes en las que tienen medio de pago: **6 cuentas sin medio de pago entraron al barrido y
+confirmaron cero**, y solo por mirarlas dejaron de ser un hueco.
+**`GOLDEN CP BACK UP` (408753721820872) no se toca ni se lee** — orden del Centro de Mando.
+
+## 6 · El copy NO es la variable dominante (medido 2026-08-21)
+
+Antes de reescribir un copy que rinde mal, **descarta primero destino y creativo.**
+
+En otra empresa del grupo CP1, tres creativos llevan el **mismo cuerpo byte por byte** (485 caracteres), mismo
+producto, misma cuenta, mismos 30 días:
+
+| CTA | Gasto | Compras | CPA | ROAS |
+|---|---|---|---|---|
+| WHATSAPP_MESSAGE | 236.700 | 16 | **14.794** | 4,81 |
+| SHOP_NOW | 437.084 | 13 | 33.622 | 3,35 |
+| SHOP_NOW | 238.692 | 2 | 119.346 | 0,84 |
+
+**Mismo texto, CPA de 14.794 a 119.346 — ocho veces.** La comparación honesta es entre los dos
+con muestra decente: **WhatsApp 2,3x mejor que SHOP_NOW con texto idéntico** (16 y 13 compras).
+El de CPA 119.346 tiene 2 compras y no aguanta conclusión.
+
+**Qué obliga esto:** un copy no se juzga contra su CPA a secas. Si dos piezas con el mismo texto
+se separan 8x, el texto no explica la diferencia. Al auditar, pregunta primero **a dónde manda el
+anuncio y con qué creativo corre**, y solo después toca las palabras.
+
+### WhatsApp le gana a SHOP_NOW · TRES mediciones independientes (subido a la base el 2026-09-01)
+
+Mismo hallazgo, tres ventanas de 30 días, tres muestras distintas, misma cuenta y mismo cuerpo
+byte por byte. Última medición, con el mapeo creativo→anuncio **verificado** con
+`ads_get_creative_ads` (no inferido del nombre):
+
+| Fecha | CTA ganador | CPA WhatsApp | CPA SHOP_NOW | Ventaja | Muestra |
+|---|---|---|---|---|---|
+| 2026-08-21 | WhatsApp | 14.794 | 33.622 | 2,3x | 16 vs 13 compras |
+| 2026-08-25 | WhatsApp | 18.457 | 33.591 / 41.353 | 1,8x / 2,2x | 21 vs 16 vs 12 |
+| **2026-09-01** | **WhatsApp** | **19.730** | **34.370 / 41.353** | **1,7x / 2,1x** | **29 vs 16 vs 12** |
+
+**Tres corridas, misma dirección, magnitud entre 1,7x y 2,3x.** Y el de WhatsApp es el único que
+siguió escalando gasto sin degradar su CPA (387.596 → 572.166 COP, CPA 18.457 → 19.730), mientras
+uno de los SHOP_NOW dejó de gastar y quedó congelado.
+
+> **Regla: en COD colombiano, con el mismo texto, el destino WhatsApp rinde entre 1,7x y 2,3x mejor
+> que SHOP_NOW. Si un copy rinde mal y manda a web, cambia el destino ANTES de reescribir el texto.**
+
+**Su límite, dicho claro:** el creativo de video no es idéntico entre las piezas, así que **no es un
+A/B controlado y el número exacto no es de fiar. Lo que sí es de fiar, tres veces seguidas, es la
+dirección.**
+
+## 7 · Qué del mercado se puede medir y qué no (método, 2026-08-21)
+
+Tres corridas de 150 anuncios por recencia dejan esto claro:
+
+- **Lo medible del título es `cabe en 40`, NO la media.** Cuatro corridas: 82% → 81% → 84% → 79%.
+  Siempre alrededor de cuatro de cada cinco. Esa es la base.
+- **Corrección del 2026-08-25 a lo que decían las corridas 1-3:** aquí se afirmaba que la longitud
+  media era la cifra estable (30,1 → 29,6 → 30,0). **No lo es.** La corrida 4 dio media **32,5** con
+  la mediana **cayendo** de 28 a 25,5 — media arriba y mediana abajo es cola larga: dos anunciantes
+  con títulos de 300+ caracteres arrastran el promedio. **Era estable por suerte de muestreo, no por
+  robustez.** Si necesitas un número de largo, usa la mediana (25-31 en cuatro corridas), nunca la media.
+- **Emoji, MAYÚSCULAS y "título = oferta" NO son medibles así.** Emoji hizo 51% → 65% → 26% → **58%**
+  en cuatro corridas. Eso no es una tendencia, es una muestra que cambia de composición. Se probó la
+  robustez midiendo **1 título por página** (neutraliza al anunciante que repite): 30%, casi igual
+  — o sea, no lo sesga un anunciante concentrado, **el indicador se mueve solo**.
+- **Corrección explícita a la corrida del 2026-08-16:** allí se anotó el alza de emoji y
+  MAYÚSCULAS como "señal a vigilar". Era ruido. No se sostiene.
+- **Recordatorio permanente:** la API devuelve por RECENCIA. Muestra el molde del mercado, **no
+  prueba qué convierte.** Nunca lo reportes como "lo que funciona".

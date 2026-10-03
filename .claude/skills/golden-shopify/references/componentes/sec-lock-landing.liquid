@@ -1,0 +1,64 @@
+{% comment %} === COMPONENTE: CANDADO LANDING (COD) — G3.4 === {% endcomment %}
+{% comment %} Bloque custom_liquid. Va TEMPRANO en el main (justo después de PALETA & MARCA). {% endcomment %}
+{% comment %}
+  PARA QUÉ SIRVE
+  ──────────────
+  Convierte la página de producto en una LANDING BLOQUEADA: oculta el header, la
+  barra de anuncios y el footer del tema para que el cliente NO tenga cómo irse
+  al home ni al resto de la tienda. Todo el foco queda en comprar (COD).
+
+  POR QUÉ display:none Y NO "ocultar el header" DESDE EL EDITOR
+  ────────────────────────────────────────────────────────────
+  Si ocultas el header/footer desde el editor de Shopify, ese grupo de sección
+  se deja de RENDERIZAR (sale del DOM). En temas tipo Shrine el JS global del tema
+  se arranca desde ahí; sin él, las secciones del producto (que nacen invisibles y
+  aparecen con animación) quedan sin inicializar → "desaparece todo".
+  Este bloque usa display:none: el DOM sigue existiendo, el tema inicializa su JS,
+  y solo se oculta VISUALMENTE la navegación. Nada se rompe.
+
+  FAMILIAS VERIFICADAS EN TIENDA REAL (medido 2026-09-05, no supuesto)
+  ────────────────────────────────────────────────────────────────────
+  Se cargo la tienda demo oficial de cada tema, se midio el header VISIBLE (control),
+  se inyecto este CSS tal cual y se volvio a medir:
+    · Impulse 9.0.0   → OCULTA. Su header es `.site-header` y su footer `.site-footer`:
+      sin la ampliacion de G4.20 este candado NO habria ocultado NADA en Impulse.
+    · Prestige 11.4.0 → OCULTA. Usa `.shopify-section-group-header-group` (ya cubierto).
+    · Dawn 15.5.0     → OCULTA (tienda propia, verificado antes).
+  PARA EL 1000 ME FALTA: ejercer el candado en una tienda REAL con tema Debut, Booster o Ella.
+  Lo puede dar: FER (la URL de un VIP con uno de esos temas) o una corrida real en una tienda de
+  esa familia. No lo puedo cerrar yo: sus demos ya no se publican en el theme store.
+
+  SIN VERIFICAR, y se dice: **Debut, Booster y Ella** — sus demos ya no estan publicados en
+  el theme store (medido el mismo dia), asi que no habia tienda real donde ejercerlo. En esas
+  familias el candado va por lista, no por medicion: correr la comprobacion de abajo.
+
+  VERIFICAR EN LA TIENDA REAL (obligatorio, no opcional)
+  ─────────────────────────────────────────────────────
+  Ninguna lista de selectores cubre todos los temas del mundo, y este bloque falla en
+  SILENCIO: si no acierta, la pagina se ve perfecta y el cliente igual puede irse al home.
+  Por eso, tras aplicar, se MIDE en la tienda (consola del navegador):
+
+    const h = document.querySelector('header'), f = document.querySelector('footer');
+    ({ header_oculto: !h || getComputedStyle(h).display === 'none',
+       footer_oculto: !f || getComputedStyle(f).display === 'none' })
+
+  Si alguno sale `false`, se anade el selector real de ESE tema a la lista de arriba.
+
+  CÓMO PERMITIR NAVEGACIÓN OTRA VEZ
+  ─────────────────────────────────
+  Pon LOCK = false (o apaga el bloque desde el editor). El usuario decide.
+{% endcomment %}
+{% assign LOCK = true %}
+{% if LOCK %}
+<style id="gfs-lock-landing">
+/* Header, announcement y footer del tema: ocultos (sin salidas al home). Cubre Shrine + Dawn/Sense. */
+#shopify-section-header,.shopify-section-group-header-group,.section-header,.header-wrapper,header.header,sticky-header,.announcement-bar,.announcement-bar-section,#shopify-section-announcement-bar,#shopify-section-footer,.shopify-section-group-footer-group,.section-footer,.footer,
+/* familias FUERA de Dawn/Shrine (Debut, Impulse, Prestige, Booster, Ella y derivados): sin estas
+   el candado no ocultaba NADA y fallaba en silencio — la pagina se veia bien y el cliente igual
+   podia irse al home. */
+.site-header,#SiteHeader,#shopify-section-sections--header,.main-header,.header__wrapper,
+.site-footer,#SiteFooter,.main-footer{display:none !important;}
+/* Cualquier enlace suelto al home/tienda queda inerte. */
+a[href="/"],a[href="/#"],a[href$="/collections/all"]{pointer-events:none !important;cursor:default !important;}
+</style>
+{% endif %}

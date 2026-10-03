@@ -1,0 +1,174 @@
+# Guía campo por campo — Generador de Anuncios
+
+Los campos son **los mismos por las dos vías**: por MCP son parámetros de `banners_generate`
+(vía principal, ver `mcp-api.md`); por navegador son la pantalla **Generador de Anuncios →
+[Producto] → "Generar Nuevo Anuncio"**. Cada generación consume **1 crédito**: un campo vacío o
+flojo = imagen floja = crédito perdido.
+
+**Equivalencia campo web → parámetro MCP** (para no traducir a ojo):
+
+| Campo en la web | Parámetro MCP |
+|---|---|
+| Referencia (plantilla) | `reference_banner_url` |
+| Foto del Producto 1/2/3 | `product_image_url` · `product_image_2_url` · `product_image_3_url` (o `product_id`) |
+| Tamaño de salida | `size_preset` (`1080x1080`…) · vertical 1080×1350 = `custom` + `width`/`height` |
+| Idioma del copy | `language` |
+| Modelo | `model` (`ecomagic` \| `gpt-image-2`) |
+| Detalles del Producto | `product_details` |
+| Ángulo de Venta | `sales_angle` |
+| Problema específico | `specific_problem` |
+| Avatar / Público objetivo | `target_avatar` |
+| Cómo se vuelve la solución | `ideal_solution` (+ `unique_mechanism`, `desired_outcome`) |
+| Instrucciones Adicionales | `additional_instructions` |
+| Adaptar Personajes | `character_nationality` · `character_sex` · `character_age_range` |
+| (sin equivalente web) | `thinking_mode`, `awareness_level` — solo por MCP |
+
+## Los campos, en orden
+
+### Referencia (obligatorio)
+**La MAQUETA que Ecom Magic va a clonar** — no "inspiración". Lo que traiga (producto, claims,
+textos) sale en tu pieza. **Ábrela y mírala (`thumbnail_url`) antes de usarla; nunca por id.**
+- **"Seleccionar Plantilla"** (Galería EcomMagic) — elige un molde acorde al mensaje de la
+  pieza. Ej.: grilla de beneficios, pack de precios, testimonio, antes/después, "cómo actúa".
+- **"Subir desde PC"** — para replicar un molde propio del usuario.
+
+**Heurística de molde por pieza (decide rápido, no preguntes):**
+
+| Pieza / objetivo | Molde de referencia a buscar |
+|---|---|
+| Hero de beneficios (salud/estética natural) | checklist de beneficios con íconos, paleta natural |
+| Antes/Después (resultado en piel/cuerpo) | split "Antes / Después" de la MISMA zona (mano/pie/piel), **no rostros**. ⛔ **Antes de elegir este molde, mira el VERTICAL** — ver el corte de abajo: en antiedad/arrugas/reafirmante y en pérdida de peso, este molde NO se usa |
+| Cómo actúa / mecanismo | 3 pasos numerados con íconos |
+| Pack de precios / oferta | grilla de packs 1/2/3 con precio tachado |
+| Prueba social | testimonio con estrellas + foto |
+| Ingredientes / composición | bote + lista de ingredientes con íconos |
+
+### ⛔ CORTE DE ANTES/DESPUÉS POR VERTICAL (Meta 2026 — riesgo de cuenta)
+
+La política de Meta **no trata igual todos los antes/después**. Verificado 2026-08-10:
+
+| Vertical del producto | Antes/después |
+|---|---|
+| Antiedad, arrugas, reafirmante, lifting | **PROHIBIDO** — no lo generes |
+| Pérdida de peso / adelgazamiento | **PROHIBIDO** — no lo generes |
+| Salud bucal y claim de salud sensible | **PROHIBIDO** (norma Golden 2026-08-07) |
+| Cosmética general (uña, cabello, mancha localizada) | Permitido con público 18+, misma zona, sin rostros y sin inducir rechazo del propio cuerpo |
+
+Y sin excepción de vertical: **nada de segunda persona que señale la condición del
+espectador** ("tu papada", "acabá con tus arrugas") ni titulares de plazo con resultado
+("resultados en 7 días") — desde 2026 Meta evalúa el significado IMPLÍCITO, así que un
+titular de plazo junto a un split de antes/después se lee como claim de transformación
+engañoso aunque nunca aparezca la palabra "garantizado".
+
+**Qué se pone en su lugar cuando el vertical está prohibido:** macro de textura, modo de
+uso, mecanismo ilustrado ("cómo actúa"), ingredientes y lifestyle. Convierten y no arriesgan
+la cuenta.
+
+Filtra la galería por **"Belleza y Cuidado Personal"** para salud/estética (por la categoría
+afín en otros verticales). Si el producto tiene identidad de color fuerte (ej. miel/amarillo),
+prefiere un molde que **contraste** sin pelear con esa identidad.
+
+### Foto del Producto (obligatorio)
+De 1 a 3 fotos **reales** del producto. Usa la mejor foto limpia; si hay varias tomas útiles,
+aprovecha las 3 ranuras.
+- **Por MCP (vía principal):** entra como `product_image_url` — una **URL pública** (CDN de
+  Shopify, web del proveedor). Archivo local → `assets_upload(purpose="product_image")`. Si el
+  producto ya existe en Ecom Magic, `product_id` ya trae su foto guardada. **El usuario no sube
+  ni arrastra nada.**
+- **Solo por navegador (fallback):** ahí sí la arrastra el usuario al recuadro "Imagen 1" —
+  ver `ui-navegacion.md` → "Subir la FOTO".
+
+### Tamaño de salida del anuncio (obligatorio)
+Dropdown. Estándar Golden:
+- **1080×1080 (Instagram Cuadrado)** → se GENERA así; la pieza de galería se ENTREGA a
+  2048×2048 al optimizar (Shopify lo recomienda y el zoom lo exige — ver SKILL.md paso 5).
+- **1080×1350 (Instagram vertical)** → infografías de secciones.
+Ajusta según la pieza que estés generando.
+
+### Idioma del copy anuncio
+**Español** por defecto (mercado LatAm).
+
+### Modelo
+Toggle **Ecom Magic** ↔ **GPT Image 2 (Nuevo)**. Por defecto Ecom Magic; prueba GPT Image 2
+si quieres otra estética o el resultado no convence. (No cambia el costo: 1 crédito.)
+
+### Personalización del Anuncio (toggle, déjalo ON)
+- **"Desarrollar Ángulo de Ventas General con IA"** — la IA propone el ángulo.
+- **"Seleccionar Ángulo de Venta Guardado"** — reutiliza uno guardado del producto.
+
+### Adaptar Personajes (opcional)
+Nacionalidad, Sexo, Rango de Edad de las personas que aparezcan en la pieza. Ajusta al
+avatar real del producto (ej.: mujer 45-55 para un producto de menopausia).
+
+### Detalles del Producto (máx. 700)
+Datos duros: precios COD, presentación, envío, notas de composición. Ej. (con la moneda del
+país que corresponda):
+```
+1 unidad — [precio]
+2 unidades — [precio con descuento]
+3 unidades — [precio mejor oferta]
+Pago contra entrega · Envío gratis
+```
+Usa los datos REALES que dio el usuario. Este campo alimenta lo que la IA puede escribir.
+
+### Ángulo de Venta (máx. 700)
+A quién le hablas y desde qué deseo/dolor. Ej.: "Mujeres 45-55 con primeros síntomas de
+menopausia que buscan alivio natural con respaldo científico."
+
+### Problema específico que aborda el ángulo (máx. 700)
+El dolor concreto y por qué las soluciones actuales no le funcionan.
+
+### Avatar o Público Objetivo (máx. 700)
+Descripción del comprador ideal (edad, contexto, nivel de consciencia, objeciones).
+
+### Cómo el producto se vuelve la solución ideal (máx. 700)
+Mecanismo de acción, por qué funciona mejor que alternativas, la transformación prometida.
+
+### Instrucciones Adicionales (máx. 700)
+El campo más útil para el control fino: precio exacto a mostrar, personaje, color, nombre
+del producto, qué NO poner, jerarquía del texto. Ej.: "Muestra el precio grande abajo a la
+derecha. No pongas testimonios. Título máximo 5 palabras. Paleta verde y blanco."
+
+## Botón Generar
+
+**"Generar Anuncio Profesional"** (dice "Esta generación consumirá 1 crédito"). Se habilita
+cuando hay referencia + foto de producto. Genera **una pieza a la vez** y revísala.
+
+También existe **"Descargar anuncios de forma masiva"** para bajar todo lo ya generado de un
+producto de una sola vez.
+
+## Cómo escribir el TEXTO que va dentro de la imagen
+
+Tú escribes el copy de cada pieza (vía Instrucciones Adicionales / Detalles / Ángulo). Reglas:
+- **Texto GRANDE y legible en móvil** (74% del tráfico LatAm es celular; la gente escanea,
+  no lee). Poca palabra, alto contraste.
+- **Una idea por pieza.** Hook arriba, beneficio/prueba en el cuerpo.
+- **SIN botón ni CTA clickeable** (ley 4). Nada de "Compra aquí / Pide ya" dibujado como
+  botón, ni número/keyword de WhatsApp incrustado. La imagen persuade; el CTA real + botón
+  los pone golden-shopify DEBAJO. Puedes cerrar con un cierre emocional o de beneficio
+  ("Verrugas fuera, piel libre"), pero nunca con un control que imite ser clickeable.
+- **Respuesta directa** en el mensaje visual: hook → beneficio → prueba. Apóyate en
+  `golden-copywriting` para ángulos si hace falta.
+- **El precio** solo si la pieza es específicamente de oferta/pack y el usuario lo pide; si
+  no, déjalo para el bloque nativo de golden-shopify (se edita sin regenerar).
+- **Nada inventado**: precios, claims y garantías salen de los datos reales del usuario.
+- 🔴 **Pega la LISTA NEGRA en `additional_instructions` SIEMPRE** (texto exacto en la Ley 6 del
+  SKILL.md). El generador inventa por defecto: etiqueta con ingredientes falsos, "garantizado",
+  "más de 10.000 usuarios". Sin la lista negra, lo hace. Y aun con ella, **audita el render**.
+- **Coherencia de marca**: no metas amarillos gratis en fondos/diseño; respeta la paleta real
+  del producto (si el producto ya es amarillo, como Tag Recede, eso es *producto fiel*, no la
+  regla que se evita).
+
+## Supervisión y arreglo
+
+(Web → MCP: "Editar anuncio" = `banners_edit` · "Redimensionar" = `banners_resize` · "Traducir"
+= `banners_translate` · "Solicitar reembolso" = `refund_request`. Editar/redimensionar/traducir
+cuestan 1 crédito; el reembolso es gratis.)
+
+- **Editar** → cambios de bloque grande (titular, un beneficio, un color). ⚠️ **Si en la pieza se
+  LEE la etiqueta del producto, REGENERA en vez de editar**: la edición re-renderiza todo y deja
+  el texto fino del envase ilegible (verificado en vivo).
+- **Redimensionar** → misma pieza en otro tamaño sin rehacer el diseño.
+- **Traducir** → otra versión de idioma (mismo producto, otro país).
+- **Reembolso** → si la pieza salió inservible (etiqueta alterada, claim inventado), recupera el
+  crédito y regenera con la lista negra puesta.

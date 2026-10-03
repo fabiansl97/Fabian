@@ -1,0 +1,86 @@
+# Fase 2 — Documento maestro (.docx)
+
+Genera un Word profesional con la skill `docx` (o python-docx). Es la **fuente de verdad** del
+proyecto. Accionable: cada sección termina en "qué significa esto para la campaña". Todo citado.
+Se guarda en `PROYECTOS/<PRODUCTO>/00-ESTUDIO-DE-MERCADO.docx`.
+
+**Si ninguna de las dos vías está disponible** (skill `docx` no instalada y `python-docx` no
+instalable en el entorno): no se omite la fase. Se entrega el `.md` completo con toda la
+estructura de abajo y se marca `[PENDIENTE — .docx real, requiere skill docx o python-docx]` en
+`estado.pendientes` del expediente. El candado de completitud (regla 7 de `reglas-de-oro.md`)
+sigue exigiendo el `.docx` en cuanto la herramienta esté disponible — el `.md` es un sustituto
+declarado, nunca un cierre silencioso de la fase.
+
+## Estructura del documento
+```
+PORTADA — Producto · País · Fecha · "Golden Group — Estudio de Mercado 360°"
+
+1. RESUMEN EJECUTIVO
+   - 5 hallazgos clave + la oportunidad más grande + la oferta recomendada (1 página).
+
+2. EL PRODUCTO
+   - Qué es, mecanismo, beneficios→resultados, specs (confirmadas), diferenciales, claims sensibles.
+   - **INGREDIENTES leídos de la ETIQUETA que se despacha** (con la foto/fotograma como fuente),
+     jamás de la página de un competidor homónimo.
+   - **ALÉRGENOS literales del envase** — obligatorio; si no se pudo leer el panel:
+     `[ALÉRGENOS NO VERIFICADOS — falta foto]`, nunca "no tiene". (Regla 11.)
+
+3. MERCADO Y DEMANDA
+   - Tamaño/tendencia, estacionalidad, validación como ganador, saturación. (con fuentes)
+   - **VENTAS REALES EN DROPKILLER** (§1.3.bis, con fecha): unidades depuradas contra reportadas,
+     veredicto REAL/DUDOSO/FANTASMA, tendencia, proveedores activos y ETAPA del mercado. Rotulado
+     "mercado de dropshipping". Si no se pudo medir, se dice y la demanda baja de nivel (regla 15).
+
+4. BUYER PERSONAS (2–3)
+   - Demográfico (estimado), antes/después, dolores, deseos, objeciones, frases textuales.
+
+4.bis DOSSIER PSICOLÓGICO (30 capas) — ver `dossier-psicologico.md`
+   - Vuelca las 30 capas completas (promesa, mecanismo, dolores/miedos/anhelos, disparadores,
+     criterios, objeciones, nivel de consciencia, señales de credibilidad, insights, públicos
+     múltiples). Cada capa anclada en fuente o marcada `(inferencia)`. Es el corazón del documento.
+
+5. COMPETIDORES
+   - Tabla: Competidor | PV | Precio | Oferta | Diferencial | Hueco. + Lectura del hueco de mercado.
+
+6. VOZ DEL CLIENTE
+   - Top elogios y top quejas con CITAS y fuente. Palabras/frases recurrentes del cliente.
+
+7. REDES SOCIALES
+   - Canales, contenido que resuena, preguntas/objeciones frecuentes, UGC del nicho.
+
+8. INTELIGENCIA DE ANUNCIOS
+   - **DIAS DECLARADOS *y* VENTANA OBSERVADA de cada anuncio citado** (DropKiller), en ese formato:
+     *"declara N dias, observado M"*. `activeDays` solo es `endDate - startDate` declarado y avanza
+     sin que nadie vea el anuncio (trampa del zombi, §1.7); la ventana observada es un PISO porque
+     casi todos empezaron antes de que la herramienta mirara. **Un numero suelto de los dos miente.**
+     Incluir `landingUrl` (dice si el competidor cierra por WhatsApp o por landing) y la fecha de
+     consulta (regla 13). Nivel de evidencia: GASTO declarado, nunca COMPRA.
+   - Qué anuncian negocio y competidores (Meta + TikTok), ángulos dominantes, ofertas, formatos.
+
+8.bis MERCADO EN VIVO (Fase 3 — ver `03-mercado-en-vivo.md`)
+   - Tabla PAÍS POR PAÍS: quién vende, precio local y en USD, oferta, pago, anuncios activos, antigüedad.
+   - MATRIZ DE OFERTA Y COMBOS: 1/2/3 unidades por competidor, con regalo, envío, garantía y ancla.
+   - AUTOPSIA DE PÁGINA de los 2-3 que más llevan anunciando: secciones en ORDEN y stack técnico.
+   - INVENTARIO DE CREATIVOS ordenado por DÍAS ACTIVO, con el gancho de los 3 primeros segundos.
+   - **LOS HUECOS**: lo que nadie está sembrando — dolores sin nombrar, públicos sin atacar, ángulos,
+     escalones de precio, secciones y formatos ausentes, países con demanda y sin oferta. Cada uno con
+     la evidencia de que está vacío y con la hipótesis de por qué.
+   - Todo con FECHA DE MEDICIÓN. Conteos cerrados o marcados `N+ (abierto)`.
+
+9. ESTRATEGIA DE MENSAJE
+   - Mapa de ángulos (5–8), objeciones + rebatidos, diferenciales priorizados, oferta/ancla.
+
+10. VIABILIDAD Y VEREDICTO (el cierre del estudio)
+   - **Cada dato rotulado con su NIVEL de evidencia** (COMPRA / GASTO / OPINION — regla 15). Una
+     demanda sostenida solo por "opinion" no es demanda: es interes.
+   - Los 5 datos con evidencia: demanda · saturación · proveedor (costo real, stock) · margen vs
+     CPA del nicho · riesgo regulatorio.
+   - VEREDICTO honesto: LANZAR / LANZAR CON CONDICIONES (cuáles) / MATAR (por qué).
+   - Pendientes con dueño (`[PENDIENTE]` del expediente) y precios rotulados "referencia de mercado".
+   - Handoff: "para construir y encender, corre `golden360` con este estudio como Bloque 1".
+```
+
+## Reglas del documento
+- Cita textual de cliente > párrafo de análisis. Úsalas en abundancia.
+- Marca claramente lo que es **dato con fuente** vs **hipótesis**.
+- El documento debe poder leerse solo y entender a quién hablarle, qué decirle y cómo diferenciarse.
